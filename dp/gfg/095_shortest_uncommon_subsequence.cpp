@@ -1,54 +1,24 @@
 #include "../../template.hpp"
 
-void find_subsequences(string s, set<string>& seqs, string& current, int n) {
-    if (n == 0) {
-        seqs.insert(current);
-        return;
-    }
-    find_subsequences(s, seqs, current, n - 1);
-    current.push_back(s[n - 1]);
-    find_subsequences(s, seqs, current, n - 1);
-    current.pop_back();
-}
-
-set<string> find_subsequences(string s) {
-    set<string> seqs;
-    string current;
-    find_subsequences(s, seqs, current, s.size());
-    return seqs;
-}
-
-int brute(string s1, string s2) {
-    const auto s1parts = find_subsequences(s1);
-    const auto s2parts = find_subsequences(s2);
-
-    int ans = INF;
-    for (const auto& part : s1parts) {
-        if (not s2parts.count(part)) {
-            ans = min(ans, (int)part.size());
-        }
-    }
-    return ans == INF ? -1 : ans;
-}
-
-set<string> FindSubseqs(string s) {
-    int n = s.size();
-    set<string> ans;
-    for (int i = 0; i < (1 << n); ++i) {
-        string temp;
-        for (int j = 0; j < n; ++j) {
+set<string> GenSubsets(string s) {
+    int m = s.size();
+    set<string> as;
+    for (int i = 0; i < (1 << m); ++i) {
+        string elems;
+        for (int j = 0; j < m; ++j) {
             if (i & (1 << j)) {
-                temp += s[j];
+                elems += s[j];
             }
         }
-        ans.insert(move(temp));
+        as.insert(elems);
     }
-    return ans;
+    return as;
 }
 
+
 int brute2(string a, string b) {
-    const auto first = FindSubseqs(a);
-    const auto second = FindSubseqs(b);
+    const auto first = GenSubsets(a);
+    const auto second = GenSubsets(b);
 
     size_t ans = INF;
     for (const auto& subseq : first) {
@@ -95,9 +65,6 @@ int tab(string a, string b) {
 }
 
 int main() { TimeMeasure _; __x();
-    cout << brute("babab", "babba") << endl; // 3
-    cout << brute("abb", "abab") << endl; // -1
-    cout << endl;
     cout << brute2("babab", "babba") << endl; // 3
     cout << brute2("abb", "abab") << endl; // -1
     cout << endl;

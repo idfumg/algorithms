@@ -1,26 +1,17 @@
 #include "../../template.hpp"
 
-void MinSwapsToBalanceBrackets(const string& s) {
-    int left = 0, right = 0, n = s.size(), swaps = 0;
-    for (int i = 0; i < n; ++i) {
-        if (s[i] == '[' and right == 0) {
-            ++left;
-        }
-        else if (s[i] == '[' and right > 0) { // swap
-            swaps += right;
-            --right;
-        }
-        else if (s[i] == ']' and left == 0) {
-            ++right;
-        }
-        else if (s[i] == ']' and left > 0) {
-            --left;
-        }
+void MinSwapsToBalanceBrackets(string s) {
+    int left = 0, right = 0, ans = 0;
+    for (char ch : s) {
+        if (ch == '[' and right == 0) ++left;
+        else if (ch == ']' and left == 0) ++right;
+        else if (ch == '[') ans += right, right -= 1;
+        else if (ch == ']') left -= 1;
     }
-    cout << swaps << '\n';
+    cout << ans << endl;
 }
 
-int main() { TimeMeasure _;
+int main() { TimeMeasure _; __x();
     MinSwapsToBalanceBrackets("]][["); // 3
     MinSwapsToBalanceBrackets("[]][]["); // 2
     MinSwapsToBalanceBrackets("[[][]]"); // 0

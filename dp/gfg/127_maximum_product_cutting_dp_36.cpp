@@ -105,26 +105,41 @@ int tab3(int n) {
     return dp[n][1];
 }
 
-int rec4(int total, int n, int left) {
-    if (n == 0) return left == total ? 1 : left;
-    return max(rec4(total, n - 1, left + 1), rec4(total, n - 1, 1) * left);
+int rec4_(int n) {
+    if (n <= 1) return 1;
+    int ans = 0;
+    for (int i = 1; i <= n; ++i) {
+        ans = max(ans, rec4_(n - i) * i);
+    }
+    return max(ans, n);
 }
 
 int rec4(int n) {
-    return rec4(n, n - 1, 1);
+    int ans = 0;
+    for (int i = 1; i < n; ++i) {
+        ans = max(ans, rec4_(n - i) * i);
+    }
+    return ans;
 }
 
 int tab4(int n) {
-    vvi dp(n + 1, vi(n + 1));
+    vi dp(n + 1);
     for (int i = 0; i <= n; ++i) {
-        for (int j = n; j >= 0; --j) {
-            if (i == 0) dp[i][j] = j == n ? 1 : j;
-            else dp[i][j] = max(dp[i - 1][j + 1], dp[i - 1][1] * j);
+        if (i == 0 or i == 1) dp[i] = 1;
+        else {
+            int ans = 0;
+            for (int k = 1; k <= i; ++k) {
+                ans = max(ans, dp[i - k] * k);
+            }
+            dp[i] = max(ans, i);
         }
     }
-    return dp[n - 1][1];
+    int ans = 0;
+    for (int i = 1; i < n; ++i) {
+        ans = max(ans, dp[n - i] * i);
+    }
+    return ans;
 }
-
 
 int main() { TimeMeasure _; __x();
     cout << rec(2) << endl; // 1

@@ -3,32 +3,28 @@
 vi tab(vi arr, int k) {
     int n = arr.size();
     vi ans;
-
     while (k--) {
-        vi dp(n);
+        vi dp = arr;
         vi prev(n, -1);
-        int maxi = arr[0];
-        int idx = 0;
-        dp[0] = arr[0];
         for (int i = 1; i < n; ++i) {
-            if (dp[i - 1] + arr[i] > arr[i]) {
-                dp[i] = dp[i - 1] + arr[i];
+            if (arr[i] + dp[i - 1] > arr[i]) {
+                dp[i] = arr[i] + dp[i - 1];
                 prev[i] = i - 1;
             }
-            else {
-                dp[i] = arr[i];
-            }
-            if (maxi < dp[i]) {
-                maxi = dp[i];
-                idx = i;
+        }
+        int maxsum = -INF;
+        int maxidx = 0;
+        for (int i = 0; i < n; ++i) {
+            if (dp[i] > maxsum) {
+                maxsum = dp[i];
+                maxidx = i;
             }
         }
-        ans.push_back(maxi);
-        for (int at = idx; at != -1; at = prev[at]) {
+        ans.push_back(dp[maxidx]);
+        for (int at = maxidx; at != -1; at = prev[at]) {
             arr[at] = -INF;
         }
     }
-
     return ans;
 }
 

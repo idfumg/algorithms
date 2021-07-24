@@ -1,99 +1,64 @@
 #include "../../template.hpp"
 
-int with1(int n);
-
-int with0(int n) {
-    if (n == 1) return 1;
-    return with0(n - 1) + with1(n - 1);
-}
-
-int with1(int n) {
-    if (n == 1) return 1;
-    return with0(n - 1);
+int rec(int n, int prev) {
+    if (n == 0) return 1;
+    if (prev == 0) return rec(n - 1, 0) + rec(n - 1, 1);
+    return rec(n - 1, 0);
 }
 
 int rec(int n) {
-    return with0(n) + with1(n);
+    return rec(n - 1, 0) + rec(n - 1, 1);
 }
 
 int tab(int n) {
-    vi with0(n), with1(n);
-    with0[0] = with1[0] = 1;
-    for (int i = 1; i < n; ++i) {
-        with0[i] = with0[i - 1] + with1[i - 1];
-        with1[i] = with0[i - 1];
-    }
-    return with0[n - 1] + with1[n - 1];
-}
-
-int opt(int n) {
-    vi with0(2), with1(2);
-    with0[0] = with1[0] = 1;
-    int idx = 0;
-    for (int i = 1; i < n; ++i) {
-        idx = i & 1;
-        with0[idx] = with0[1 - idx] + with1[1 - idx];
-        with1[idx] = with0[1 - idx];
-    }
-    return with0[idx] + with1[idx];
-}
-
-int rec2(int n, int prev) {
-    if (n == 0) return 1;
-    if (n < 0) return 0;
-    int count = 0;
-    for (int i : {0, 1}) {
-        if (prev == 1 and i == 1) continue;
-        count += rec2(n - 1, i);
-    }
-    return count;
-}
-
-int rec2(int n) {
-    if (n == 0) return 0;
-    int count = 0;
-    for (int i : {0, 1}) {
-        count += rec2(n - 1, i);
-    }
-    return count;
-}
-
-int tab2(int n) {
-    if (n == 0) return 0;
     vvi dp(n + 1, vi(2));
     for (int i = 0; i <= n; ++i) {
-        for (int j : {0, 1}) {
-            if (i == 0) {
-                dp[i][j] = 1;
-            }
-            else {
-                for (int k : {0, 1}) {
-                    if (j == 1 and k == 1) continue;
-                    dp[i][j] += dp[i - 1][k];
-                }
-            }
+        for (int j = 0; j <= 1; ++j) {
+            if (i == 0) dp[i][j] = 1;
+            else if (j == 0) dp[i][j] = dp[i - 1][0] + dp[i - 1][1];
+            else dp[i][j] = dp[i - 1][0];
         }
-
     }
     return dp[n - 1][0] + dp[n - 1][1];
 }
 
-int tab3(int n) {
-    vvi dp(n + 1, vi(2));
-    dp[0][0] = dp[0][1] = 1;
+int opt(int n) {
+    vvi dp(2, vi(2));
     int idx = 0;
-    for (int i = 1; i <= n; ++i) {
+    for (int i = 0; i <= n; ++i) {
         idx = i & 1;
-        for (int j : {0, 1}) {
-            int count = 0;
-            for (int k : {0, 1}) {
-                if (k == 1 and j == 1) continue;
-                count += dp[1 - idx][k];
-            }
-            dp[idx][j] = count;
+        for (int j = 0; j <= 1; ++j) {
+            if (i == 0) dp[idx][j] = 1;
+            else if (j == 0) dp[idx][j] = dp[1 - idx][0] + dp[1 - idx][1];
+            else dp[idx][j] = dp[1 - idx][0];
         }
     }
-    return max(dp[idx]);
+    return dp[1 - idx][0] + dp[1 - idx][1];
+}
+
+int with1(int n);
+
+int with0(int n) {
+    if (n == 0) return 1;
+    return with0(n - 1) + with1(n - 1);
+}
+int with1(int n) {
+    if (n == 0) return 1;
+    return with0(n - 1);
+}
+
+int rec2(int n) {
+    return with0(n - 1) + with1(n - 1);
+}
+
+int tab2(int n) {
+    vi w0(n + 1), w1(n + 1);
+    w0[0] = w1[0] = 1;
+    for (int i = 1; i < n; ++i) {
+        w1[i] = w0[i - 1];
+        w0[i] = w0[i - 1] + w1[i - 1];
+    }
+    return w0[n - 1] + w1[n - 1];
 }
 
 int rec_easy(int n, int prev) {
@@ -121,21 +86,18 @@ int tab_easy(int n) {
 }
 
 int main() { TimeMeasure _; __x();
-    cout << rec(2) << endl;
-    cout << rec(3) << endl;
+    cout << rec(2) << endl; // 3
+    cout << rec(3) << endl; // 5
+    cout << endl;
     cout << tab(2) << endl;
     cout << tab(3) << endl;
+    cout << endl;
     cout << opt(2) << endl;
     cout << opt(3) << endl;
+    cout << endl;
     cout << rec2(2) << endl;
     cout << rec2(3) << endl;
+    cout << endl;
     cout << tab2(2) << endl;
     cout << tab2(3) << endl;
-    cout << tab3(2) << endl;
-    cout << tab3(3) << endl;
-    cout << rec_easy(2) << endl; // 3
-    cout << rec_easy(3) << endl; // 5
-    cout << endl;
-    cout << tab_easy(2) << endl; // 3
-    cout << tab_easy(3) << endl; // 5
 }

@@ -2,34 +2,48 @@
 
 ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root, vi& arr) {
-    if (not root) return;
-    inorder(root->left, arr);
-    arr.push_back(root->value);
-    inorder(root->right, arr);
-}
-
 Node* insert(Node* root, int value) {
     if (not root) return new Node(value);
-    if (value < root->value) root->left = insert(root->left, value);
-    else if (value > root->value) root->right = insert(root->right, value);
+    if (root->value > value) root->left = insert(root->left, value);
+    if (root->value < value) root->right = insert(root->right, value);
+    return root;
+}
+
+void inorder(Node* root, vi& in) {
+    if (not root) return;
+    inorder(root->left, in);
+    in.push_back(root->value);
+    inorder(root->right, in);
+}
+
+int find_mid(vi arr, int i, int j) {
+    return i + (j - i) / 2;
+}
+
+Node* construct(vi arr, int i, int j) {
+    if (i >= j) return nullptr;
+    int mid = find_mid(arr, i, j);
+    Node* root = new Node(arr[mid]);
+    root->left = construct(arr, i, mid);
+    root->right = construct(arr, mid + 1, j);
     return root;
 }
 
 Node* MergeTrees(Node* root1, Node* root2) {
-    vi arr1, arr2;
-    inorder(root1, arr1);
-    inorder(root2, arr2);
+    vi in1, in2;
+    inorder(root1, in1);
+    inorder(root2, in2);
 
-    Node* root = nullptr;
-    int i = 0, j = 0;
-    while (i < arr1.size() and j < arr2.size()) {
-        if (arr1[i] < arr2[j]) root = insert(root, arr1[i++]);
-        else root = insert(root, arr2[j++]);
+    int k = 0, i = 0, j = 0, m = in1.size(), n = in2.size();
+    vi in(m + n);
+    while (i < m and j < n) {
+        if (in1[i] < in2[j]) in[k++] = in1[i++];
+        else in[k++] = in2[j++];
     }
-    while (i < arr1.size()) root = insert(root, arr1[i++]);
-    while (j < arr2.size()) root = insert(root, arr2[j++]);
-    return root;
+    while (i < m) in[k++] = in1[i++];
+    while (j < n) in[k++] = in2[j++];
+
+    return construct(in, 0, in.size());
 }
 
 int main() { TimeMeasure _; __x();

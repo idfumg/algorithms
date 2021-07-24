@@ -1,30 +1,37 @@
 #include "../../template.hpp"
 
-int LowerBound(vi arr, int from, int key) {
-    int n = arr.size(), low = from, high = n - 1;
-    while (low != high) {
-        int mid = low + (high - low) / 2;
-        if (arr[mid] < key) low = mid + 1;
-        else high = mid;
-    }
-    return low;
-}
-
-void FindTriplets(vi arr) {
-    sort(arr.begin(), arr.end());
+void FindTriplets1(vi arr) {
     int n = arr.size();
     for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n - 1; ++j) {
-            int x = -(arr[i] + arr[j]);
-            int idx = LowerBound(arr, j + 1, x);
-            if (arr[idx] == x) {
-                cout << arr[i] << ' ' << arr[j] << ' ' << x << endl;
+        for (int j = i + 1; j < n; ++j) {
+            for (int k = j + 1; k < n; ++k) {
+                if (arr[i] + arr[j] + arr[k] == 0) {
+                    cout << arr[i] << ' ' << arr[j] << ' ' << arr[k] << endl;
+                }
             }
         }
     }
+    cout << endl;
+}
+
+void FindTriplets2(vi arr) {
+    int n = arr.size();
+    sort(arr.begin(), arr.end());
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            int sum = arr[i] + arr[j];
+            if (binary_search(arr.begin() + j + 1, arr.end(), -sum)) {
+                cout << arr[i] << ' ' << arr[j] << ' ' << -sum << endl;
+            }
+        }
+    }
+    cout << endl;
 }
 
 int main() { TimeMeasure _;
-    FindTriplets({0, -1, 2, -3, 1});
-    FindTriplets({1, -2, 1, 0, 5});
+    FindTriplets1({0, -1, 2, -3, 1}); // O(n^3)
+    FindTriplets1({1, -2, 1, 0, 5});
+    cout << endl;
+    FindTriplets2({0, -1, 2, -3, 1}); // O(logn + n^2)
+    FindTriplets2({1, -2, 1, 0, 5});
 }

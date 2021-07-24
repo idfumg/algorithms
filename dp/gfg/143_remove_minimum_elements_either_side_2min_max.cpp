@@ -1,50 +1,53 @@
 #include "../../template.hpp"
 
-pair<vvi, vvi> GetMinsMaxs(vi arr) {
+vvi getMins(vi arr) {
     int n = arr.size();
-    vvi mins(n + 1, vi(n + 1));
-    vvi maxs(n + 1, vi(n + 1));
-    for (int i = 1; i <= n; ++i) {
-        mins[i][i] = arr[i - 1];
-        maxs[i][i] = arr[i - 1];
-    }
-    for (int i = 1; i < n; ++i) {
-        mins[i][i + 1] = min(arr[i - 1], arr[i]);
-        maxs[i][i + 1] = max(arr[i - 1], arr[i]);
-    }
-    for (int k = 2; k <= n; ++k) {
-        for (int i = 1, j = i + k; j <= n; ++i, ++j) {
-            mins[i][j] = min(mins[i + 1][j], arr[i - 1]);
-            maxs[i][j] = max(maxs[i + 1][j], arr[i - 1]);
+    vvi dp(n + 2, vi(n + 1, INF));
+    for (int i = n; i >= 1; --i) {
+        for (int j = 1; j <= n; ++j) {
+            if (i > j) dp[i][j] = INF;
+            else if (i == j) dp[i][j] = arr[i - 1];
+            else if (j - i == 1) dp[i][j] = min(arr[i - 1], arr[j - 1]);
+            else dp[i][j] = min(arr[i - 1], dp[i + 1][j]);
         }
     }
-    return {mins, maxs};
+    return dp;
 }
 
-int rec(vi arr, vvi& mins, vvi& maxs, int i, int j) {
-    if (i > j) {
-        return 0;
+vvi getMaxs(vi arr) {
+    int n = arr.size();
+    vvi dp(n + 2, vi(n + 1, -INF));
+    for (int i = n; i >= 1; --i) {
+        for (int j = 1; j <= n; ++j) {
+            if (i > j) dp[i][j] = -INF;
+            else if (i == j) dp[i][j] = arr[i - 1];
+            else if (j - i == 1) dp[i][j] = max(arr[i - 1], arr[j - 1]);
+            else dp[i][j] = max(arr[i - 1], dp[i + 1][j]);
+        }
     }
-    if (mins[i][j] * 2 > maxs[i][j]) {
-        return 0;
-    }
-    return min(rec(arr, mins, maxs, i + 1, j),
-               rec(arr, mins, maxs, i, j - 1)) + 1;
+    return dp;
+}
+
+int rec(vi arr, int i, int j) {
+    if (i >= j) return 0;
+    vvi mins = getMins(arr);
+    vvi maxs = getMaxs(arr);
+    if (2 * mins[i][j] > maxs[i][j]) return 0;
+    return min(rec(arr, i + 1, j), rec(arr, i, j - 1)) + 1;
 }
 
 int rec(vi arr) {
-    auto [mins, maxs] = GetMinsMaxs(arr);
-    return rec(arr, mins, maxs, 1, arr.size());
+    return rec(arr, 1, arr.size());
 }
 
 int tab(vi arr) {
     int n = arr.size();
-    const auto [mins, maxs] = GetMinsMaxs(arr);
     vvi dp(n + 1, vi(n + 1));
+    vvi mins = getMins(arr);
+    vvi maxs = getMaxs(arr);
     for (int i = n; i >= 1; --i) {
         for (int j = 1; j <= n; ++j) {
-            if (i > j) dp[i][j] = 0;
-            else if (mins[i][j] * 2 > maxs[i][j]) dp[i][j] = 0;
+            if (2 * mins[i][j] > maxs[i][j]) dp[i][j] = 0;
             else dp[i][j] = min(dp[i + 1][j], dp[i][j - 1]) + 1;
         }
     }

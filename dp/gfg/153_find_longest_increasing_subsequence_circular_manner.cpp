@@ -17,18 +17,17 @@ int tab1(vi arr) {
     return max(dp);
 }
 
-int tab2(vi arr) {
-    int m = arr.size();
-    int n = 2 * m;
+int tab2(vi& arr) {
+    int n = arr.size();
     vi dp(n, 1);
-    for (int i = 0; i < n; ++i) {
+    for (int i = 1; i < 2 * n; ++i) {
         for (int j = 0; j < i; ++j) {
-            if (arr[i % m] > arr[j % m]) {
-                dp[i % m] = max(dp[i % m], dp[j % m] + 1);
+            if (arr[i % n] > arr[j % n]) {
+                dp[i % n] = max(dp[i % n], dp[j % n] + 1);
             }
         }
     }
-    return max(dp);
+    return *max_element(dp.begin(), dp.end());
 }
 
 int main() { TimeMeasure _; __x();
