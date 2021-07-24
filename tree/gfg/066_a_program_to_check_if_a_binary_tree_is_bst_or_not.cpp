@@ -1,16 +1,15 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-bool IsBST(Node* root, int low = -INF, int high = INF) {
+bool IsBST(Node* root, int low, int high) {
     if (not root) return true;
-    if (root->value < low or root->value > high) return false;
-    return IsBST(root->left, low, root->value - 1) and IsBST(root->right, root->value + 1, high);
+    if (root->value <= low or root->value >= high) return false;
+    return IsBST(root->left, low, root->value) and IsBST(root->right, root->value, high);
+}
+
+bool IsBST(Node* root) {
+    return IsBST(root, -INF, +INF);
 }
 
 int main() { TimeMeasure _; __x();

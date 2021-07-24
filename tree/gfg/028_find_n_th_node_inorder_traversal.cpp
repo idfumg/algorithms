@@ -1,23 +1,16 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value;
-    Node* left;
-    Node* right;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root, int& n, int& ans) {
+void inorder(Node* root, int& k) {
     if (not root) return;
-    inorder(root->left, n, ans);
-    if (--n == 0) ans = root->value;
-    inorder(root->right, n, ans);
+    inorder(root->left, k);
+    if (k-- == 1) cout << root->value << endl;
+    inorder(root->right, k);
 }
 
-void NthInorder(Node* root, int n) {
-    int ans = -1;
-    inorder(root, n, ans);
-    cout << ans << endl;
+void NthInorder(Node* root, int k) {
+    inorder(root, k);
 }
 
 int main() { TimeMeasure _; __x();

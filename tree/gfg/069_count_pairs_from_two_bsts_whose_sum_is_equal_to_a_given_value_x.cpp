@@ -1,33 +1,24 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root, unordered_map<int, int>& map) {
+void preorder(Node* root, unordered_set<int>& tab) {
     if (not root) return;
-    inorder(root->left, map);
-    ++map[root->value];
-    inorder(root->right, map);
+    tab.insert(root->value);
+    preorder(root->left, tab);
+    preorder(root->right, tab);
 }
 
-int CountPairs(Node* root1, Node* root2, int x) {
-    unordered_map<int, int> map1, map2;
-    inorder(root1, map1);
-    inorder(root2, map2);
-
-    int ans = 0;
-    for (const auto& [key, count] : map1) {
-        int diff = x - key;
-        if (map2.count(diff)) {
-            cout << key << ' ' << diff << endl;
-            ++ans;
-        }
+int CountPairs(Node* root1, Node* root2, int target) {
+    unordered_set<int> tab1, tab2;
+    preorder(root1, tab1);
+    preorder(root2, tab2);
+    int count = 0;
+    for (int value : tab1) {
+        int diff = target - value;
+        if (tab2.count(diff)) ++count;
     }
-    return ans;
+    return count;
 }
 
 int main() { TimeMeasure _; __x();

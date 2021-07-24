@@ -1,30 +1,36 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 Node* insert(Node* root, int value) {
     if (not root) return new Node(value);
-    if (value > root->value) root->right = insert(root->right, value);
-    if (value < root->value) root->left = insert(root->left, value);
+    for (Node* curr = root; curr;) {
+        if (value < curr->value and not curr->left) {
+            curr->left = new Node(value);
+            return root;
+        }
+        else if (value > curr->value and not curr->right) {
+            curr->right = new Node(value);
+            return root;
+        }
+        else if (value < curr->value) curr = curr->left;
+        else if (value > curr->value) curr = curr->right;
+        else return root;
+    }
     return root;
 }
 
-void inorder(Node* root, vi& seq, int& idx) {
+void inorder(Node* root, vi arr, int& idx) {
     if (not root) return;
-    inorder(root->left, seq, idx);
-    if (idx < seq.size() and seq[idx] == root->value) ++idx;
-    inorder(root->right, seq, idx);
+    inorder(root->left, arr, idx);
+    if (root->value == arr[idx]) ++idx;
+    inorder(root->right, arr, idx);
 }
 
-bool SequenceExist(Node* root, vi seq) {
+bool IsSequenceExist(Node* root, vi arr) {
     int idx = 0;
-    inorder(root, seq, idx);
-    return idx == seq.size();
+    inorder(root, arr, idx);
+    return idx == arr.size();
 }
 
 int main() { TimeMeasure _; __x();
@@ -39,6 +45,6 @@ int main() { TimeMeasure _; __x();
     root = insert(root, 14);
     root = insert(root, 13);
 
-    cout << SequenceExist(root, {4, 6, 8, 14}) << endl; // 1
-    cout << SequenceExist(root, {4, 6, 8, 12, 13}) << endl; // 0
+    cout << IsSequenceExist(root, {4, 6, 8, 14}) << endl; // 1
+    cout << IsSequenceExist(root, {4, 6, 8, 12, 13}) << endl; // 0
 }

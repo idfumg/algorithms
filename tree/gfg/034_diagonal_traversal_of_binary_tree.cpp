@@ -1,33 +1,18 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value;
-    Node* left;
-    Node* right;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root) {
+void preorder(Node* root, map<int, vi>& tab, int diagonal) {
     if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
-
-void traverse(Node* root, map<int, vi>& map, int diagonal) {
-    if (not root) return;
-    map[diagonal].push_back(root->value);
-    traverse(root->left, map, diagonal + 1);
-    traverse(root->right, map, diagonal);
+    tab[diagonal].push_back(root->value);
+    preorder(root->left, tab, diagonal + 1);
+    preorder(root->right, tab, diagonal);
 }
 
 void DiagonalPrint(Node* root) {
-    if (not root) return;
-
-    map<int, vi> map;
-    traverse(root, map, 0);
-
-    for (const auto& [key, nodes] : map) {
+    map<int, vi> tab;
+    preorder(root, tab, 0);
+    for (const auto& [diagonal, nodes] : tab) {
         cout << nodes << endl;
     }
 }

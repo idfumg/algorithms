@@ -1,65 +1,99 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
-void preorder(Node* root, vi& path, vi& maxpath) {
+void height(Node* root, vi& path, vi& curr) {
     if (not root) return;
-    path.push_back(root->value);
-    if (path.size() > maxpath.size()) maxpath = path;
-    preorder(root->left, path, maxpath);
-    preorder(root->right, path, maxpath);
-    path.pop_back();
+    curr.push_back(root->value);
+    if (curr.size() > path.size()) path = curr;
+    height(root->left, path, curr);
+    height(root->right, path, curr);
+    curr.pop_back();
 }
 
-void diameter(Node* root, vi& path, vi& maxpath) {
+void diameter(Node* root, vi& path) {
     if (not root) return;
 
-    vi left;
-    vi right;
-    preorder(root->left, path, left);
-    preorder(root->right, path, right);
+    vi left, right, curr;
+    height(root->left, left, curr);
+    height(root->right, right, curr);
 
-    if (maxpath.size() < left.size() + right.size() + 1) {
-        maxpath.assign(left.rbegin(), left.rend());
-        maxpath.push_back(root->value);
-        copy(right.begin(), right.end(), inserter(maxpath, maxpath.end()));
+    if (left.size() + 1 + right.size() > path.size()) {
+        path.assign(left.rbegin(), left.rend());
+        path.push_back(root->value);
+        copy(right.begin(), right.end(), back_inserter(path));
     }
 
-    diameter(root->left, path, maxpath);
-    diameter(root->right, path, maxpath);
+    diameter(root->left, path);
+    diameter(root->right, path);
 }
 
-void diameter(Node* root) {
+void Diameter(Node* root) {
     vi path;
-    vi maxpath;
-    diameter(root, path, maxpath);
-    cout << maxpath << endl;
+    diameter(root, path);
+    debugn(path);
 }
 
 int main() { TimeMeasure _; __x();
-    //           1
-    //         /   \
-    //        2     3
-    //      /   \
-    //     4     5
-    //      \   / \
-    //       8 6   7
-    //      /
-    //     9
-    Node* root = new Node(1);
-    root->left = new Node(2);
-    root->right = new Node(3);
-    root->left->left = new Node(4);
-    root->left->right = new Node(5);
-    root->left->right->left = new Node(6);
-    root->left->right->right = new Node(7);
-    root->left->left->right = new Node(8);
-    root->left->left->right->left = new Node(9);
+    {
+        //           1
+        //         /   \
+        //        2     3
+        //      /   \
+        //     4     5
+        //      \   / \
+        //       8 6   7
+        //      /
+        //     9
+        Node* root = new Node(1);
+        root->left = new Node(2);
+        root->right = new Node(3);
+        root->left->left = new Node(4);
+        root->left->right = new Node(5);
+        root->left->right->left = new Node(6);
+        root->left->right->right = new Node(7);
+        root->left->left->right = new Node(8);
+        root->left->left->right->left = new Node(9);
 
-    diameter(root); // 9 8 4 2 1 3
+        Diameter(root); // 9 8 4 2 1 3
+    }
+    {
+        Node* root = new Node(1);
+        root->right = new Node(2);
+        root->left = new Node(3);
+
+        root->left->right = new Node(4);
+        root->left->right->right = new Node(5);
+        root->left->right->left = new Node(6);
+        root->left->right->right->right = new Node(7);
+        root->left->right->right->right->left = new Node(8);
+
+        root->left->left = new Node(9);
+        root->left->left->right = new Node(10);
+        root->left->left->right->left = new Node(11);
+        root->left->left->right->left->right = new Node(12);
+
+        root->left->left->left = new Node(13);
+
+        Diameter(root); //
+    }
+    {
+        Node* root = new Node(1);
+        root->left = new Node(2);
+        root->left->left = new Node(4);
+        root->left->right = new Node(5);
+        root->right = new Node(3);
+
+        Diameter(root); // 4 2 1 3 or 5 2 1 3
+    }
+    {
+        Node* root = new Node(1);
+        root->left = new Node(2);
+        root->left->left = new Node(4);
+        root->left->right = new Node(5);
+        root->right = new Node(3);
+        root->right->right = new Node(6);
+
+        Diameter(root); // 4 2 1 3 6 or 5 2 1 3 6
+    }
 }

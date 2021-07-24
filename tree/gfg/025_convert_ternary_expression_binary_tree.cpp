@@ -1,35 +1,27 @@
 #include "../../template.hpp"
 
-struct Node {
-    char value;
-    Node* left;
-    Node* right;
-    Node(int value) : value(value), left(nullptr), right(nullptr) {}
-};
-
-void preorder(Node* root) {
-    if (not root) return;
-    cout << root->value << ' ';
-    preorder(root->left);
-    preorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
 Node* construct(string s, int& idx) {
     if (idx >= s.size()) return nullptr;
-    Node* root = new Node(s[idx++]);
-    if (s[idx] == '?') {
+    Node* root = new Node(s[idx++] - '0');
+    if (idx < s.size() and s[idx] == '?') {
         root->left = construct(s, ++idx);
+        root->right = construct(s, ++idx);
+    }
+    else if (idx < s.size() and s[idx] == ':') {
         root->right = construct(s, ++idx);
     }
     return root;
 }
 
-Node* construct(string s) {
+void construct(string s) {
     int idx = 0;
-    return construct(s, idx);
+    Node* root = construct(s, idx);
+    cout << root << endl;
 }
 
 int main() { TimeMeasure _; __x();
-    Node* root = construct("a?b?c:d:e");
-    preorder(root); // a b c d e
+    construct("1?2:3"); // 1 2 3
+    construct("1?2?3:4:5"); // 1 2 3 4 5
 }

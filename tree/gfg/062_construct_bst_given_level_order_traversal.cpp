@@ -1,18 +1,6 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 Node* insert(Node* root, int value) {
     if (not root) return new Node(value);
@@ -65,10 +53,10 @@ Node* construct_bst2(vi arr) {
 int main() { TimeMeasure _; __x();
     {
         Node* root = construct_bst1({7, 4, 12, 3, 6, 8, 1, 5, 10});
-        inorder(root); cout << endl; // 1 3 4 5 6 7 8 10 12
+        cout << root << endl; // 1 3 4 5 6 7 8 10 12
     }
     {
         Node* root = construct_bst2({7, 4, 12, 3, 6, 8, 1, 5, 10});
-        inorder(root); cout << endl; // 1 3 4 5 6 7 8 10 12
+        cout << root << endl; // 1 3 4 5 6 7 8 10 12
     }
 }

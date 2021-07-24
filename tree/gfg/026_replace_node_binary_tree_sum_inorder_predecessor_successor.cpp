@@ -1,40 +1,30 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value;
-    Node* left;
-    Node* right;
-    Node(int value) : value(value), left(nullptr), right(nullptr) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
-void preorder(Node* root) {
+void inorder(Node* root, vi& arr) {
     if (not root) return;
-    cout << root->value << ' ';
-    preorder(root->left);
-    preorder(root->right);
+    inorder(root->left, arr);
+    arr.push_back(root->value);
+    inorder(root->right, arr);
 }
 
-void inorder(Node* root, vi& in) {
+void inorder(Node* root, vi& arr, int& idx) {
     if (not root) return;
-    inorder(root->left, in);
-    in.push_back(root->value);
-    inorder(root->right, in);
-}
-
-void replace(Node* root, vi& in, int& idx) {
-    if (not root) return;
-    replace(root->left, in, idx);
-    if (idx == 0) root->value = in[idx + 1];
-    else root->value = in[idx - 1] + in[idx + 1];
-    replace(root->right, in, ++idx);
+    inorder(root->left, arr, idx);
+    root->value = 0;
+    if (idx > 0) root->value = arr[idx - 1];
+    if (idx < arr.size()) root->value += arr[idx + 1];
+    ++idx;
+    inorder(root->right, arr, idx);
 }
 
 void ReplaceNodeWithSum(Node* root) {
-    vi in;
-    inorder(root, in);
+    vi arr;
+    inorder(root, arr);
 
     int idx = 0;
-    replace(root, in, idx);
+    inorder(root, arr, idx);
 }
 
 int main() { TimeMeasure _; __x();
@@ -46,7 +36,7 @@ int main() { TimeMeasure _; __x();
     root->right->left = new Node(6);
     root->right->right = new Node(7);
 
-    preorder(root); cout << endl;
+    cout << root << endl; // 1 2 4 5 3 6 7
     ReplaceNodeWithSum(root);
-    preorder(root); // 11 9 2 3 13 4 3
+    cout << root << endl; // 11 9 2 3 13 4 3
 }

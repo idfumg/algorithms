@@ -1,15 +1,10 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
 int height(Node* root) {
     if (not root) return 0;
-    return max(height(root->left), height(root->right)) + 1;
+    return 1 + max(height(root->left), height(root->right));
 }
 
 bool IsBalanced(Node* root) {
@@ -31,11 +26,12 @@ int main() { TimeMeasure _; __x();
 */
     Node* root = new Node(1);
     root->left = new Node(2);
-    root->right = new Node(3);
     root->left->left = new Node(4);
     root->left->right = new Node(5);
-    root->right->left = new Node(6);
     root->left->left->left = new Node(7);
+
+    root->right = new Node(3);
+    root->right->left = new Node(6);
 
     cout << IsBalanced(root) << endl; // 1
 }

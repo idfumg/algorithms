@@ -41,6 +41,30 @@ int tab2(const string& s) { // With Straightforward Algorithm (How minimum to de
     return dp[1][n];
 }
 
+int rec3(string s, int i, int j) {
+    if (i >= j) return 0;
+    if (s[i - 1] == s[j - 1]) return rec3(s, i + 1, j - 1);
+    return min(rec3(s, i + 1, j), rec3(s, i, j - 1)) + 1;
+}
+
+int rec3(string s) {
+    return rec3(s, 1, s.size());
+}
+
+int tab3(string s) {
+    int n = s.size();
+    vvi dp(n + 2, vi(n + 1));
+    for (int i = n; i >= 1; --i) {
+        for (int j = 1; j <= n; ++j) {
+            if (i >= j) dp[i][j] = 0;
+            else if (s[i - 1] == s[j - 1]) dp[i][j] = dp[i + 1][j - 1];
+            else dp[i][j] = min(dp[i + 1][j], dp[i][j - 1]) + 1;
+        }
+    }
+    return dp[1][n];
+}
+
+
 int main() { TimeMeasure _; __x();
     cout << tab("baca") << endl; // 1
     cout << tab("geek") << endl; // 2
@@ -51,4 +75,14 @@ int main() { TimeMeasure _; __x();
     cout << tab2("geek") << endl; // 2
     cout << tab2("aebcbda") << endl; // 2
     cout << tab2("geeksforgeeks") << endl; // 8
+    cout << endl;
+    cout << rec3("baca") << endl; // 1
+    cout << rec3("geek") << endl; // 2
+    cout << rec3("aebcbda") << endl; // 2
+    cout << rec3("geeksforgeeks") << endl; // 8
+    cout << endl;
+    cout << tab3("baca") << endl; // 1
+    cout << tab3("geek") << endl; // 2
+    cout << tab3("aebcbda") << endl; // 2
+    cout << tab3("geeksforgeeks") << endl; // 8
 }

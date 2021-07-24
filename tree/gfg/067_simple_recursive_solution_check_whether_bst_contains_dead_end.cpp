@@ -1,42 +1,53 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 Node* insert(Node* root, int value) {
     if (not root) return new Node(value);
-    if (root->value > value) root->left = insert(root->left, value);
-    if (root->value < value) root->right = insert(root->right, value);
+    if (value < root->value) root->left = insert(root->left, value);
+    else if (value > root->value) root->right = insert(root->right, value);
     return root;
 }
 
-bool isDeadEnd(Node* root, int low = 1, int high = INF) {
+bool hasDeadEnd(Node* root, int low, int high) {
     if (not root) return false;
-    if (low == high) return true;
-    return isDeadEnd(root->left, low, root->value - 1) or isDeadEnd(root->right, root->value + 1, high);
+    if (abs(high - low) <= 2) return true;
+    return hasDeadEnd(root->left, low, root->value) or hasDeadEnd(root->right, root->value, high);
+}
+
+bool hasDeadEnd(Node* root) {
+    return hasDeadEnd(root, 0, +INF);
 }
 
 int main() { TimeMeasure _; __x();
-    /*   8
-       /   \
-      5    11
-     /  \
-    2    7
-     \
-      3
-       \
-        4 */
-    Node* root = nullptr;
-    root = insert(root, 8);
-    root = insert(root, 5);
-    root = insert(root, 2);
-    root = insert(root, 3);
-    root = insert(root, 7);
-    root = insert(root, 11);
-    root = insert(root, 4);
-    cout << isDeadEnd(root) << endl; // 1
+    {
+        /*
+               8
+             /   \
+           5      9
+         /   \
+        2     7
+       /
+      1
+        */
+        Node* root = nullptr;
+        for (int value : {8, 5, 2, 3, 7, 1, 4}) {
+            root = insert(root, value);
+        }
+        cout << hasDeadEnd(root) << endl; // 1
+    }
+    {
+        /*
+              8
+            /   \
+           7     10
+         /      /   \
+        2      9     13
+        */
+        Node* root = nullptr;
+        for (int value : {8, 7, 2, 10, 9, 13}) {
+            root = insert(root, value);
+        }
+        cout << hasDeadEnd(root) << endl; // 1
+    }
 }

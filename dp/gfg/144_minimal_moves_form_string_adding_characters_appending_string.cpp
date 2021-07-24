@@ -1,41 +1,22 @@
 #include "../../template.hpp"
 
-int rec(string& s, int n) {
-    if (n == 0) {
-        return 0;
-    }
-    if (n % 2 == 0) {
-        const auto part1 = s.substr(0, n / 2);
-        const auto part2 = s.substr(n / 2, n / 2);
-        if (part1 == part2) {
-            return rec(s, n / 2) + 1;
-        }
-    }
-    return rec(s, n - 1) + 1;
+int rec(string s, int n) {
+    if (n == 0) return 0;
+    if (n % 2 == 0) return 1 + rec(s, n / 2);
+    return 1 + rec(s, n - 1);
 }
 
-int rec(string& s) {
+int rec(string s) {
     int n = s.size();
     return rec(s, n);
 }
 
-int tab(string& s) {
+int tab(string s) {
     int n = s.size();
     vi dp(n + 1);
     for (int i = 1; i <= n; ++i) {
-        if (i % 2 == 0) {
-            const auto part1 = s.substr(0, i / 2);
-            const auto part2 = s.substr(i / 2, i / 2);
-            if (part1 == part2) {
-                dp[i] = min(dp[i - 1], dp[i / 2]) + 1;
-            }
-            else {
-                dp[i] = dp[i - 1] + 1;
-            }
-        }
-        else {
-            dp[i] = dp[i - 1] + 1;
-        }
+        if (i % 2 == 0) dp[i] = 1 + dp[i / 2];
+        else dp[i] = 1 + dp[i - 1];
     }
     return dp[n];
 }

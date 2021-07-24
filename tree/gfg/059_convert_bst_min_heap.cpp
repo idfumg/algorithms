@@ -1,43 +1,31 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
-void Preorder(Node* root) {
+void inorder(Node* root, vi& arr) {
     if (not root) return;
-    cout << root->value << ' ';
-    Preorder(root->left);
-    Preorder(root->right);
+    inorder(root->left, arr);
+    arr.push_back(root->value);
+    inorder(root->right, arr);
 }
 
-void Inorder(Node* root, vi& in) {
+void preorder(Node* root, vi& arr, int& idx) {
     if (not root) return;
-    Inorder(root->left, in);
-    in.push_back(root->value);
-    Inorder(root->right, in);
-}
-
-void Preorder(Node* root, vi& in, int& idx) {
-    if (not root) return;
-    root->value = in[idx++];
-    Preorder(root->left, in, idx);
-    Preorder(root->right, in, idx);
+    root->value = arr[idx++];
+    preorder(root->left, arr, idx);
+    preorder(root->right, arr, idx);
 }
 
 void ConvertToMinHeap(Node* root) {
-    vi in;
-    Inorder(root, in);
+    vi arr;
+    inorder(root, arr);
 
     int idx = 0;
-    Preorder(root, in, idx);
+    preorder(root, arr, idx);
 }
 
 int main() { TimeMeasure _; __x();
-    Node *root = new Node(4);
+    Node* root = new Node(4);
     root->left = new Node(2);
     root->right = new Node(6);
     root->left->left = new Node(1);
@@ -46,5 +34,5 @@ int main() { TimeMeasure _; __x();
     root->right->right = new Node(7);
 
     ConvertToMinHeap(root);
-    Preorder(root); // 1 2 3 4 5 6 7
+    cout << root << endl; // 1 2 3 4 5 6 7
 }

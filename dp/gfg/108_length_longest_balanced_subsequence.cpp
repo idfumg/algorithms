@@ -1,78 +1,66 @@
 #include "../../template.hpp"
 
-bool IsBalanced(const string& a) {
-    int n = a.size(), i = 0;
-    vector<char> s;
-    for (int i = 0; i < n; ++i) {
-        s.push_back(a[i]);
-        while (not s.empty() and s.back() == ')') {
-            s.pop_back();
-            if (s.empty() or s.back() != '(') return false;
-            s.pop_back();
-        }
+bool IsBalanced(const string& s) {
+    int left = 0;
+    for (const char ch : s) {
+        if (ch == '(') ++left;
+        else if (left-- == 0) return false;
     }
-    return s.empty();
-}
-
-bool IsBalanced2(const string& s) {
-    int n = s.size();
-    int left = 0, right = 0;
-    for (int i = 0; i < n; ++i) {
-        if (s[i] == '(' and right == 0) {
-            left++;
-        }
-        else if (s[i] == ')' and left == 0) {
-            return false;
-        }
-        else if (s[i] == ')' and left > 0) {
-            --left;
-        }
-    }
-    return left == 0 and right == 0;
-}
-
-void naive(const string& s, int from, int& res, string& current) {
-    int n = s.size();
-    if (from == s.size()) {
-        if (IsBalanced2(current)) {
-            res = max(res, static_cast<int>(current.size()));
-        }
-        return;
-    }
-    for (int i = from; i < n; ++i) {
-        naive(s, i + 1, res, current);
-        current.push_back(s[i]);
-        naive(s, i + 1, res, current);
-        current.pop_back();
-    }
+    return left == 0;
 }
 
 int naive(const string& s) {
-    int res = 0;
-    string current;
-    naive(s, 0, res, current);
-    return res;
+    const int n = s.size();
+    int ans = 0;
+    for (int i = 0; i < (1 << n); ++i) {
+        string temp;
+        for (int j = 0; j < n; ++j) {
+            if (i & (1 << j)) {
+                temp += s[j];
+            }
+        }
+        if (not temp.empty() and IsBalanced(temp)) {
+            ans = max({ans, static_cast<int>(temp.size())});
+        }
+    }
+    return ans;
 }
 
 int tab(const string& s) {
-    int n = s.size();
-    vvi dp(n, vi(n));
-    for (int i = 0; i < n - 1; ++i) {
-        if (s[i] == '(' and s[i + 1] == ')') {
-            dp[i][i + 1] = 2;
+    const int n = s.size();
+    vvi dp(n + 1, vi(n + 1));
+    for (int i = 2; i <= n; ++i) {
+        if (s[i - 2] == '(' and s[i - 1] == ')') {
+            dp[i - 1][i] = 2;
         }
     }
     for (int k = 2; k <= n; ++k) {
-        for (int i = 0, j = i + k; j < n; ++i, ++j) {
-            if (s[i] == '(' and s[j] == ')') {
+        for (int i = 1, j = i + k; j <= n; ++i, ++j) {
+            if (s[i - 1] == '(' and s[j - 2] == ')') {
                 dp[i][j] = 2 + dp[i + 1][j - 1];
             }
-            for (int p = i; p < j; ++p) {
+            for (int p = i + 1; p < j; ++p) {
                 dp[i][j] = max(dp[i][j], dp[i][p] + dp[p + 1][j]);
             }
         }
     }
-    return dp[0][n - 1];
+    return dp[1][n];
+}
+
+int rec(const string& s, int i, int j) {
+    if (i >= j) return 0;
+    int maxi = 0;
+    if (s[i - 1] == '(' and s[j - 1] == ')') {
+        maxi = rec(s, i + 1, j - 1) + 2;
+    }
+    for (int p = i + 1; p < j; ++p) {
+        maxi = max(maxi, rec(s, i, p) + rec(s, p + 1, j));
+    }
+    return maxi;
+}
+
+int rec(const string& s) {
+    return rec(s, 1, s.size());
 }
 
 int main() { TimeMeasure _; __x();
@@ -91,4 +79,9 @@ int main() { TimeMeasure _; __x();
     cout << tab("()(((((()") << '\n'; // 4
     cout << tab("((()))") << '\n'; // 6
     cout << tab("())") << '\n'; // 2
+    cout << '\n';
+    cout << rec("()())") << '\n'; // 4
+    cout << rec("()(((((()") << '\n'; // 4
+    cout << rec("((()))") << '\n'; // 6
+    cout << rec("())") << '\n'; // 2
 }

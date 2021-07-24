@@ -1,29 +1,22 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root, int& ans, int& curr, int& prev) {
+void inorder(Node* root, int& prev, int& ans, int& curr) {
     if (not root) return;
-    inorder(root->left, ans, curr, prev);
+    inorder(root->left, prev, ans, curr);
     if (prev != -INF) {
         if (root->value > prev) ++curr;
-        else curr = 0;
+        else curr = 1;
     }
     ans = max(ans, curr);
     prev = root->value;
-    inorder(root->right, ans, curr, prev);
+    inorder(root->right, prev, ans, curr);
 }
 
 int LargestBSTinBT(Node* root) {
-    int ans = 1;
-    int curr = 1;
-    int prev = -INF;
-    inorder(root, ans, curr, prev);
+    int prev = -INF, ans = 1, curr = 1;
+    inorder(root, prev, ans, curr);
     return ans;
 }
 

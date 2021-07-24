@@ -1,58 +1,51 @@
 #include "../../template.hpp"
 
-int rec(vi arr, int i, int j) {
-    if (i > j) {
-        return INF;
+pair<vvi, vvi> GetMinsMaxs(vi arr) {
+    int n = arr.size();
+    vvi mins(n + 1, vi(n + 1));
+    vvi maxs(n + 1, vi(n + 1));
+    for (int i = 1; i <= n; ++i) {
+        mins[i][i] = arr[i - 1];
+        maxs[i][i] = arr[i - 1];
     }
-    int mini = *min_element(arr.begin() + i - 1, arr.begin() + j);
-    int maxi = *max_element(arr.begin() + i - 1, arr.begin() + j);
-    if (2 * mini > maxi) {
+    for (int i = 1; i < n; ++i) {
+        mins[i][i + 1] = min(arr[i - 1], arr[i]);
+        maxs[i][i + 1] = max(arr[i - 1], arr[i]);
+    }
+    for (int k = 2; k <= n; ++k) {
+        for (int i = 1, j = i + k; j <= n; ++i, ++j) {
+            mins[i][j] = min(mins[i + 1][j], arr[i - 1]);
+            maxs[i][j] = max(maxs[i + 1][j], arr[i - 1]);
+        }
+    }
+    return {mins, maxs};
+}
+
+int rec(vi arr, vvi& mins, vvi& maxs, int i, int j) {
+    if (i > j) {
         return 0;
     }
-    return min(rec(arr, i + 1, j),
-               rec(arr, i, j - 1)) + 1;
+    if (mins[i][j] * 2 > maxs[i][j]) {
+        return 0;
+    }
+    return min(rec(arr, mins, maxs, i + 1, j),
+               rec(arr, mins, maxs, i, j - 1)) + 1;
 }
 
 int rec(vi arr) {
-    int n = arr.size();
-    return rec(arr, 1, n);
+    auto [mins, maxs] = GetMinsMaxs(arr);
+    return rec(arr, mins, maxs, 1, arr.size());
 }
 
 int tab(vi arr) {
     int n = arr.size();
-
-    vvi mini(n + 1, vi(n + 1, INF));
-    vvi maxi(n + 1, vi(n + 1, -INF));
-
-    for (int j = 1; j <= n; ++j) {
-        mini[j][j] = arr[j - 1];
-        maxi[j][j] = arr[j - 1];
-    }
-
-    for (int j = 2; j <= n; ++j) {
-        mini[j - 1][j] = min(arr[j - 1], arr[j - 2]);
-        maxi[j - 1][j] = max(arr[j - 1], arr[j - 2]);
-    }
-
-    for (int k = 2; k <= n; ++k) {
-        for (int i = 1, j = i + k; j <= n; ++i, ++j) {
-            mini[i][j] = min(arr[i - 1], mini[i + 1][j]);
-            maxi[i][j] = max(arr[i - 1], maxi[i + 1][j]);
-        }
-    }
-
-    vvi dp(n + 1, vi(n + 1, INF));
+    const auto [mins, maxs] = GetMinsMaxs(arr);
+    vvi dp(n + 1, vi(n + 1));
     for (int i = n; i >= 1; --i) {
         for (int j = 1; j <= n; ++j) {
-            if (i > j) {
-                dp[i][j] = INF;
-            }
-            else if (2 * mini[i][j] > maxi[i][j]) {
-                dp[i][j] = 0;
-            }
-            else {
-                dp[i][j] = min(dp[i + 1][j], dp[i][j - 1]) + 1;
-            }
+            if (i > j) dp[i][j] = 0;
+            else if (mins[i][j] * 2 > maxs[i][j]) dp[i][j] = 0;
+            else dp[i][j] = min(dp[i + 1][j], dp[i][j - 1]) + 1;
         }
     }
     return dp[1][n];

@@ -1,41 +1,28 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
-
-Node* construct(vi pre, vi premirror, int& idx, int i, int j) {
-    if (i > j) return nullptr;
-    int n = pre.size();
+Node* construct(vi pre, vi preMirror, int& idx, int i, int j) {
+    if (i > j or idx == pre.size()) return nullptr;
     int rootValue = pre[idx++];
-    if (idx == n) return new Node(rootValue);
-
-    int leftRootValue = pre[idx];
-    int pivot = i;
-    while (pivot <= j and premirror[pivot] != leftRootValue) ++pivot;
-
     Node* root = new Node(rootValue);
-    root->left = construct(pre, premirror, idx, pivot, j);
-    root->right = construct(pre, premirror, idx, i + 1, pivot - 1);
+    if (idx == pre.size()) return root;
+    int k = i + 1;
+    while (k <= j and preMirror[k] != pre[idx]) ++k;
+    if (k == j + 1) return root;
+    root->left = construct(pre, preMirror, idx, k, j);
+    root->right = construct(pre, preMirror, idx, i, k - 1);
     return root;
 }
 
 Node* construct(vi pre, vi premirror) {
     int idx = 0;
-    return construct(pre, premirror, idx, 0, pre.size() - 1);
+    Node* root = construct(pre, premirror, idx, 0, pre.size() - 1);
+    return root;
 }
 
 int main() { TimeMeasure _; __x();
-    Node* root = construct({1,2,4,5,3,6,7}, {1,3,7,6,2,5,4});
-    inorder(root); // 4 2 5 1 6 3 7
+    vi pre = {1,2,4,5,3,6,7};
+    vi preMirror = {1,3,7,6,2,5,4};
+    cout << construct(pre, preMirror) << endl; // 4 2 5 1 6 3 7
 }

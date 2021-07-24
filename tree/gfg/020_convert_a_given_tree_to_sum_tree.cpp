@@ -1,29 +1,19 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
-
-void convert(Node* root, Node* parent) {
-    if (not root) return;
-    if (parent) parent->value += root->value;
-    root->value = 0;
-    convert(root->left, root);
-    convert(root->right, root);
-}
-
-void convert(Node* root) {
-    convert(root, nullptr);
+int convert(Node* root) {
+    if (not root) {
+        return 0;
+    }
+    if (not root->left and not root->right) {
+        int res = root->value;
+        root->value = 0;
+        return res;
+    }
+    int res = root->value;
+    root->value = convert(root->left) + convert(root->right);
+    return res + root->value;
 }
 
 int main() { TimeMeasure _; __x();
@@ -36,5 +26,5 @@ int main() { TimeMeasure _; __x();
     root->right->right = new Node(5);
 
     convert(root);
-    inorder(root); // 0 4 0 20 0 12 0
+    cout << root << endl; // 0 4 0 20 0 12 0
 }

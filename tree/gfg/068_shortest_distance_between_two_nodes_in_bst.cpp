@@ -1,48 +1,32 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 Node* insert(Node* root, int value) {
     if (not root) return new Node(value);
-    if (value > root->value) root->right = insert(root->right, value);
     if (value < root->value) root->left = insert(root->left, value);
+    else if (value > root->value) root->right = insert(root->right, value);
     return root;
 }
 
-void inorder(Node* root, vi& in, int pivot) {
+void preorder(Node* root, int target, vi& arr) {
     if (not root) return;
-    in.push_back(root->value);
-    inorder(root->left, in, pivot);
-    inorder(root->right, in, pivot);
-    if (not in.empty() and in.back() != pivot) {
-        in.pop_back();
-    }
+    if (arr.empty() or arr.back() != target) arr.push_back(root->value);
+    preorder(root->left, target, arr);
+    preorder(root->right, target, arr);
+    if (not arr.empty() and arr.back() != target) arr.pop_back();
 }
 
-int FindLCA(vi& in1, vi& in2) {
-    if (in1.size() > in2.size()) {
-        swap(in1, in2);
+int FindDistance(Node* root, int a, int b) {
+    vi arr1, arr2;
+    preorder(root, a, arr1);
+    preorder(root, b, arr2);
+    if (arr1.empty() or arr2.empty()) return - 1;
+    if (arr1.size() > arr2.size()) swap(arr1, arr2);
+    for (int i = 0; i < arr1.size(); ++i) {
+        if (arr1[i] != arr2[i]) return arr1.size() - i + arr2.size() - i;
     }
-    int n = in1.size();
-    for (int i = 0; i < n; ++i) {
-        if (in1[i] != in2[i]) {
-            return i - 1;
-        }
-    }
-    return n - 1;
-}
-
-int FindDistance(Node* root, int from, int to) {
-    vi in1, in2;
-    inorder(root, in1, from);
-    inorder(root, in2, to);
-    int lca = FindLCA(in1, in2);
-    return in1.size() + in2.size() - 2 * lca - 2;
+    return arr2.size() - arr1.size();
 }
 
 int main() { TimeMeasure _; __x();

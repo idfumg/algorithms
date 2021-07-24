@@ -1,37 +1,29 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-int count(Node* root) {
-    if (not root) return 0;
-    return 1 + count(root->left) + count(root->right);
+int get_max(Node* root) {
+    if (not root) return -INF;
+    return max({root->value, get_max(root->left), get_max(root->right)});
 }
 
-void traverse(Node* root, vvi& arr, vi& elems) {
+void preorder(Node* root, vi& arr, vvi& mat) {
     if (not root) return;
-
-    elems.push_back(root->value);
-    traverse(root->left, arr, elems);
-    traverse(root->right, arr, elems);
-    elems.pop_back();
-
-    int n = elems.size();
-    for (int i = 0; i < n; ++i) {
-        arr[elems[i]][root->value] = 1;
+    for (int node : arr) {
+        mat[node][root->value] = 1;
     }
+    arr.push_back(root->value);
+    preorder(root->left, arr, mat);
+    preorder(root->right, arr, mat);
+    arr.pop_back();
 }
 
-vvi construct(Node* root) {
-    int n = count(root);
-    vvi arr(n, vi(n));
-    vi elems;
-    traverse(root, arr, elems);
-    return arr;
+void construct(Node* root) {
+    int n = get_max(root);
+    vi arr;
+    vvi mat(n + 1, vi(n + 1));
+    preorder(root, arr, mat);
+    cout << mat << endl;
 }
 
 int main() { TimeMeasure _; __x();
@@ -41,14 +33,7 @@ int main() { TimeMeasure _; __x();
     root->left->left = new Node(0);
     root->left->right = new Node(4);
     root->right->left = new Node(3);
-    vvi arr = construct(root);
-    int n = arr.size();
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            cout << arr[i][j] << ' ';
-        }
-        cout << endl;
-    }
+    construct(root);
 /*
 0 0 0 0 0 0
 1 0 0 0 1 0

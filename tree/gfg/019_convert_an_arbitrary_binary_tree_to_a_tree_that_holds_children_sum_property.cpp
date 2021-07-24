@@ -1,37 +1,23 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value;
-    Node* left;
-    Node* right;
-    Node(int value) : value(value), left(nullptr), right(nullptr) {}
-};
-
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 void normalize(Node* root, int diff) {
-    if (not root) return;
-    root->value += diff;
-    normalize(root->left, diff);
+    for (; root; root = root->left) {
+        root->value += diff;
+    }
+}
+
+int modify(Node* root) {
+    if (not root->left and not root->right) return root->value;
+    int diff = modify(root->left) + modify(root->right);
+    if (root->value < diff) root->value += diff - root->value;
+    else if (root->value > diff) normalize(root->left, root->value - diff);
+    return root->value;
 }
 
 void convert(Node* root) {
-    if (not root) return;
-
-    convert(root->left);
-    convert(root->right);
-
-    int sum = 0;
-    if (root->left) sum += root->left->value;
-    if (root->right) sum += root->right->value;
-
-    if (root->value <= sum) root->value = sum;
-    else normalize(root->left, root->value - sum);
+    modify(root);
 }
 
 int main() { TimeMeasure _; __x();
@@ -43,11 +29,7 @@ int main() { TimeMeasure _; __x();
     root->right->left = new Node(1);
     root->right->right = new Node(30);
 
-    inorder(root);  // 3 7 5 50 1 2 30
-    cout << endl;
-
+    cout << root << endl; // 3 7 5 50 1 2 30
     convert(root);
-
-    inorder(root); // 14 19 5 50 1 31 30
-    cout << endl;
+    cout << root << endl; // 14 19 5 50 1 31 30
 }

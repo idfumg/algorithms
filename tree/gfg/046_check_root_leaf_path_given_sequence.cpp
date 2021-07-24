@@ -1,12 +1,5 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
 bool preorder(Node* root, vi& arr, vi& path) {
     if (not root) return false;
     path.push_back(root->value);

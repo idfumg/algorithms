@@ -1,25 +1,23 @@
 #include "../../template.hpp"
 
-vi GetSums(vi arr, int from, int n, int total) {
-    vi sums;
-    for (int i = 0; i < (1 << n); ++i) {
+vi genSubsets(vi arr, int from, int count, int target) {
+    vi ans;
+    for (int i = 0; i < (1 << count); ++i) {
         int sum = 0;
-        for (int j = 0; j < n; ++j) {
+        for (int j = 0; j < count; ++j) {
             if (i & (1 << j)) {
                 sum += arr[from + j];
             }
         }
-        if (sum <= total) {
-            sums.push_back(sum);
+        if (target >= sum) {
+            ans.push_back(sum);
         }
     }
-    return sums;
+    return ans;
 }
 
 int LowerBound(vi arr, int key) {
-    int n = arr.size();
-    int low = 0;
-    int high = n - 1;
+    int n = arr.size(), low = 0, high = n - 1;
     while (low != high) {
         int mid = low + (high - low) / 2;
         if (arr[mid] < key) low = mid + 1;
@@ -28,24 +26,28 @@ int LowerBound(vi arr, int key) {
     return low;
 }
 
-int MaxSumSubsetLessThanS(vi arr, int sum) {
+int MaxSumSubsetLessThanS(vi arr, int target) {
     int n = arr.size();
 
-    vi left = GetSums(arr, 0, n / 2, sum);
-    vi right = GetSums(arr, n / 2, n - n / 2, sum);
+    vi left = genSubsets(arr, 0, n / 2, target);
+    vi right = genSubsets(arr, n / 2, n - n / 2, target);
     sort(right.begin(), right.end());
 
-    int ans = -INF;
-    for (int i = 0; i < left.size(); ++i) {
-        int j = LowerBound(right, sum - left[i]);
-        if (left[i] + right[j] == sum) {
-            return sum;
+    int ans = 0;
+    for (int v : left) {
+        int diff = target - v;
+        int idx = LowerBound(right, diff);
+
+        if (right[idx] == diff) {
+            return target;
         }
-        if (j > 0 and left[i] + right[j - 1] <= sum) {
-            ans = max(ans, left[i] + right[j - 1]);
+        else if (right[idx] < diff) {
+            ans = max(ans, right[idx] + v);
+        }
+        else if (right[idx] > diff and idx > 0) {
+            ans = max(ans, right[idx - 1] + v);
         }
     }
-
     return ans;
 }
 

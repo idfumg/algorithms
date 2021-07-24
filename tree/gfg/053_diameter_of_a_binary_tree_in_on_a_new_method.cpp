@@ -1,12 +1,5 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
 int height(Node* root, int& ans) {
     if (not root) return 0;
     int left = height(root->left, ans);

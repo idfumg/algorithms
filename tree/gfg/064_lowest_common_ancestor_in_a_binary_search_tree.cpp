@@ -1,35 +1,23 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void preorder(Node* root, vi& arr, int key) {
+void preorder(Node* root, int target, vi& arr) {
     if (not root) return;
-    if (arr.empty() or arr.back() != key) arr.push_back(root->value);
-    if (key < root->value) preorder(root->left, arr, key);
-    if (key > root->value) preorder(root->right, arr, key);
-    if (arr.back() != key) arr.pop_back();
+    if (arr.empty() or arr.back() != target) arr.push_back(root->value);
+    if (target < root->value) preorder(root->left, target, arr);
+    if (target > root->value) preorder(root->right, target, arr);
+    if (not arr.empty() and arr.back() != target) arr.pop_back();
 }
 
-int lca(Node* root, int from, int to) {
-    vi arr1;
-    preorder(root, arr1, from);
-
-    vi arr2;
-    preorder(root, arr2, to);
-
-    if (arr1.size() > arr2.size()) swap(arr1, arr2);
+int lca(Node* root, int a, int b) {
+    vi arr1, arr2;
+    preorder(root, a, arr1);
+    preorder(root, b, arr2);
     if (arr1.empty() or arr2.empty()) return -1;
-
-    int n = arr1.size();
-    for (int i = 0; i < n; ++i) {
-        if (arr1[i] != arr2[i]) {
-            return arr1[i - 1];
-        }
+    if (arr1.size() > arr2.size()) swap(arr1, arr2);
+    for (int i = 1; i < arr1.size(); ++i) {
+        if (arr1[i] != arr2[i]) return arr1[i - 1];
     }
     return arr1.back();
 }

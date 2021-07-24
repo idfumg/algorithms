@@ -36,49 +36,45 @@ vi naive(int n) {
     return res;
 }
 
-void rec(int n, vi& res, int prev, si& elems) {
+void rec(int n, int prev, vi current) {
     if (n == 0) {
-        int num = 0;
-        for (int i = size(res) - 1; i >= 0; --i) {
-            if (res[i] == 1) {
-                num += pow(2, size(res) - i - 1);
-            }
-        }
-        elems.insert(num);
+        int v = 0;
+        for_each(current.rbegin(), current.rend(), [&](int i){v = v * 2 + i;});
+        cout << v << ' ';
         return;
     }
-    for (int i : {0, 1}) {
-        if (prev == 1 and i == 1) continue;
-        res[n - 1] = i;
-        rec(n - 1, res, i, elems);
+    else if (prev == 0) {
+        rec(n - 1, 0, current + 0);
+        rec(n - 1, 1, current + 1);
+    }
+    else {
+        rec(n - 1, 0, current + 0);
     }
 }
 
-si rec(int n) {
-    vi res(n);
-    si elems;
-    for (int i : {0, 1}) {
-        res[n - 1] = i;
-        rec(n - 1, res, i, elems);
-    }
-    return elems;
+void rec(int n) {
+    vi current;
+    rec(n - 1, 0, current + 0);
+    rec(n - 1, 1, current + 1);
 }
 
-void rec_elems(int init, int n, int prev, int result) {
+void rec2(int n, int prev, int current) {
     if (n == 0) {
-        cout << result << ' ';
+        cout << current << ' ';
         return;
     }
-    if (prev == 0) {
-        rec_elems(init, n - 1, 0, result);
-        rec_elems(init, n - 1, 1, result + (1 << (init - n)));
-        return;
+    else if (prev == 0) {
+        rec2(n - 1, 0, current * 2 + 0);
+        rec2(n - 1, 1, current * 2 + 1);
     }
-    rec_elems(init, n - 1, 0, result);
+    else {
+        rec2(n - 1, 0, current * 2 + 0);
+    }
 }
 
-void rec_elems(int n) {
-    return rec_elems(n, n, 0, 0);
+void rec2(int n) {
+    rec2(n - 1, 0, 0);
+    rec2(n - 1, 1, 1);
 }
 
 int main() { TimeMeasure _; __x();
@@ -88,9 +84,9 @@ int main() { TimeMeasure _; __x();
     cout << naive(4) << endl; // 0 1 2 4 5 8 9 10
     cout << naive(3) << endl; // 0 1 2 4 5
 
-    cout << rec(4) << endl; // 0 1 2 4 5 8 9 10
-    cout << rec(3) << endl; // 0 1 2 4 5
+    rec(4); cout << endl; // 0 1 2 4 5 8 9 10
+    rec(3); cout << endl; // 0 1 2 4 5
 
-    rec_elems(4); cout << endl; // 0 1 2 4 5 8 9 10
-    rec_elems(3); cout << endl; // 0 1 2 4 5
+    rec2(4); cout << endl; // 0 1 2 4 5 8 9 10
+    rec2(3); cout << endl; // 0 1 2 4 5
 }

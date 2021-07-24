@@ -1,12 +1,5 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
 bool IsSumProperty(Node* root) {
     if (not root) return true;
     if (not root->left and not root->right) return true;

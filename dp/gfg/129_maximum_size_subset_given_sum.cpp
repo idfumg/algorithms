@@ -1,32 +1,25 @@
 #include "../../template.hpp"
 
 int rec(vi arr, int sum, int n, int count) {
-    if (sum == 0) {
-        return count;
-    }
-    if (sum < 0 or n == 0) {
-        return 0;
-    }
+    if (sum == 0) return count;
+    if (n == 0 or sum < 0) return -INF;
     return max(rec(arr, sum, n - 1, count),
                rec(arr, sum - arr[n - 1], n - 1, count + 1));
 }
 
 int rec(vi arr, int sum) {
-    int n = arr.size();
-    return rec(arr, sum, n, 0);
+    return rec(arr, sum, arr.size(), 0);
 }
 
 int rec2(vi arr, int sum, int n) {
-    if (sum <= 0 or n == 0) {
-        return 0;
-    }
+    if (sum == 0) return 0;
+    if (n == 0 or sum < 0) return -INF;
     return max(rec2(arr, sum, n - 1),
                rec2(arr, sum - arr[n - 1], n - 1) + 1);
 }
 
 int rec2(vi arr, int sum) {
-    int n = arr.size();
-    return rec2(arr, sum, n);
+    return rec2(arr, sum, arr.size());
 }
 
 int tab(vi arr, int sum) {
@@ -39,13 +32,14 @@ int tab(vi arr, int sum) {
                     dp[i][j][k] = k;
                 }
                 else if (j == 0) {
-                    dp[i][j][k] = 0;
-                }
-                else if (i >= arr[j - 1]) {
-                    dp[i][j][k] = max(dp[i][j - 1][k], dp[i - arr[j - 1]][j - 1][k + 1]);
+                    dp[i][j][k] = -INF;
                 }
                 else {
                     dp[i][j][k] = dp[i][j - 1][k];
+                    if (i >= arr[j - 1]) {
+                        dp[i][j][k] = max(dp[i][j][k],
+                                          dp[i - arr[j - 1]][j - 1][k + 1]);
+                    }
                 }
             }
         }

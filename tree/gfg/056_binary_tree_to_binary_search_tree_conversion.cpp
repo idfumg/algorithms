@@ -1,43 +1,33 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root) {
+void inorder(Node* root, vi& arr) {
     if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
+    inorder(root->left, arr);
+    arr.push_back(root->value);
+    inorder(root->right, arr);
 }
 
-void inorder(Node* root, vi& in) {
+void inorder(Node* root, vi& arr, int& idx) {
     if (not root) return;
-    inorder(root->left, in);
-    in.push_back(root->value);
-    inorder(root->right, in);
-}
-
-void inorder(Node* root, vi& in, int& idx) {
-    if (not root) return;
-    inorder(root->left, in, idx);
-    root->value = in[idx++];
-    inorder(root->right, in, idx);
+    inorder(root->left, arr, idx);
+    root->value = arr[idx++];
+    inorder(root->right, arr, idx);
 }
 
 void BinaryTreeToBST(Node* root) {
-    vi in;
-    inorder(root, in);
-    sort(in.begin(), in.end());
+    vi arr;
+    inorder(root, arr);
+
+    sort(arr.begin(), arr.end());
+
     int idx = 0;
-    inorder(root, in, idx);
+    inorder(root, arr, idx);
 }
 
 int main() { TimeMeasure _; __x();
-/* Constructing tree given in the above figure
+    /* Constructing tree given in the above figure
     10
    /  \
   30   15
@@ -50,6 +40,7 @@ int main() { TimeMeasure _; __x();
     root->left->left = new Node(20);
     root->right->right = new Node(5);
 
+    cout << root << endl; // 20 30 10 15 5
     BinaryTreeToBST(root);
-    inorder(root); // 5 10 15 20 30
+    cout << root << endl; // 5 10 15 20 30
 }

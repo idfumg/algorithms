@@ -13,85 +13,112 @@ int naive(vi& arr1, vi& arr2, int k) {
     return (minlen - lcs < k ? minlen - lcs : k) + lcs;
 }
 
-int tab_naive(vi& arr1, vi& arr2, int k) {
-    int m = arr1.size(), n = arr2.size();
+int tab_naive(vi arr1, vi arr2, int k) {
+    int m = arr1.size();
+    int n = arr2.size();
     vvi dp(m + 1, vi(n + 1));
-    for (int i = 0; i <= m; ++i) {
-        for (int j = 0; j <= n; ++j) {
-            if (i == 0 or j == 0) dp[i][j] = 0;
-            else if (arr1[i - 1] == arr2[j - 1]) dp[i][j] = 1 + dp[i - 1][j - 1];
+    for (int i = 1; i <= m; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            if (arr1[i - 1] == arr2[j - 1]) dp[i][j] = 1 + dp[i - 1][j - 1];
             else dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
         }
     }
-    int lcs = dp[m][n];
-    int minlen = min(m, n);
-    return (minlen - lcs < k ? minlen - lcs : k) + lcs;
+    int ans = dp[m][n];
+    if (ans + k <= min(m, n)) return ans + k;
+    return ans;
 }
 
-int tab_straight(vi& arr1, vi& arr2, int K) {
-    int m = arr1.size(), n = arr2.size();
-    vvvi dp(K + 1, vvi(m + 1, vi(n + 1)));
-    for (int k = 0; k <= K; ++k) {
-        for (int i = 0; i <= m; ++i) {
-            for (int j = 0; j <= n; ++j) {
-                if (i == 0 or j == 0) {
-                    dp[k][i][j] = 0;
-                }
-                else if (arr1[i - 1] == arr2[j - 1]) {
-                    dp[k][i][j] = 1 + dp[k][i - 1][j - 1];
+int tab_straight(vi arr1, vi arr2, int K) {
+    int m = arr1.size();
+    int n = arr2.size();
+    vvvi dp(m + 1, vvi(n + 1, vi(K + 1)));
+    for (int i = 1; i <= m; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            if (arr1[i - 1] == arr2[j - 1]) {
+                dp[i][j][0] = 1 + dp[i - 1][j - 1][0];
+            }
+            else {
+                dp[i][j][0] = max(dp[i - 1][j][0], dp[i][j - 1][0]);
+            }
+        }
+    }
+    for (int i = 1; i <= m; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            for (int k = 1; k <= K; ++k) {
+                if (arr1[i - 1] == arr2[j - 1]) {
+                    dp[i][j][k] = 1 + dp[i - 1][j - 1][k];
                 }
                 else {
-                    dp[k][i][j] = max({k > 0 ? dp[k - 1][i - 1][j - 1] + 1 : 0,
-                                       dp[k][i - 1][j],
-                                       dp[k][i][j - 1]});
+                    dp[i][j][k] = max({
+                            dp[i - 1][j][k],
+                            dp[i][j - 1][k],
+                            1 + dp[i - 1][j - 1][k - 1]});
                 }
             }
         }
     }
-    return dp[K][m][n];
+    return dp[m][n][K];
 }
 
-int tab_elems(vi& arr1, vi& arr2, int K) {
-    int m = arr1.size(), n = arr2.size();
-    vvvi dp(K + 1, vvi(m + 1, vi(n + 1)));
-    vvvvi prev(K + 1, vvvi(m + 1, vvi(n + 1)));
-    for (int k = 0; k <= K; ++k) {
-        for (int i = 0; i <= m; ++i) {
-            for (int j = 0; j <= n; ++j) {
-                if (i == 0 or j == 0) {
-                    dp[k][i][j] = 0;
-                }
-                else if (arr1[i - 1] == arr2[j - 1]) {
-                    dp[k][i][j] = 1 + dp[k][i - 1][j - 1];
-                    prev[k][i][j] = {k, i - 1, j - 1, 1};
+int tab_elems(vi arr1, vi arr2, int K) {
+    int m = arr1.size();
+    int n = arr2.size();
+    vvvi dp(m + 1, vvi(n + 1, vi(K + 1)));
+    vvvvi prev(m + 1, vvvi(n + 1, vvi(K + 1)));
+    for (int i = 1; i <= m; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            if (arr1[i - 1] == arr2[j - 1]) {
+                dp[i][j][0] = 1 + dp[i - 1][j - 1][0];
+                prev[i][j][0] = {i - 1, j - 1, 0, 1};
+            }
+            else {
+                if (dp[i - 1][j][0] > dp[i][j - 1][0]) {
+                    dp[i][j][0] = dp[i - 1][j][0];
+                    prev[i][j][0] = {i - 1, j, 0, 0};
                 }
                 else {
-                    dp[k][i][j] = max({k > 0 ? dp[k - 1][i - 1][j - 1] + 1 : 0,
-                                       dp[k][i - 1][j],
-                                       dp[k][i][j - 1]});
-                    if (k > 0 and dp[k][i][j] == dp[k - 1][i - 1][j - 1] + 1) {
-                        prev[k][i][j] = {k - 1, i - 1, j - 1, 2};
+                    dp[i][j][0] = dp[i][j - 1][0];
+                    prev[i][j][0] = {i, j - 1, 0, 0};
+                }
+            }
+        }
+    }
+    for (int i = 1; i <= m; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            for (int k = 1; k <= K; ++k) {
+                if (arr1[i - 1] == arr2[j - 1]) {
+                    dp[i][j][k] = 1 + dp[i - 1][j - 1][k];
+                    prev[i][j][k] = {i - 1, j - 1, k, 1};
+                }
+                else {
+                    dp[i][j][k] = max({
+                            dp[i - 1][j][k],
+                            dp[i][j - 1][k],
+                            1 + dp[i - 1][j - 1][k - 1]});
+                    if (dp[i][j][k] == dp[i - 1][j][k]) {
+                        prev[i][j][k] = {i - 1, j, k, 0};
                     }
-                    else if (dp[k][i][j] == dp[k][i - 1][j]) {
-                        prev[k][i][j] = {k, i - 1, j, 0};
+                    else if (dp[i][j][k] == dp[i][j - 1][k]) {
+                        prev[i][j][k] = {i, j - 1, k, 0};
                     }
                     else {
-                        prev[k][i][j] = {k, i, j - 1, 0};
+                        prev[i][j][k] = {i - 1, j - 1, k - 1, 2};
                     }
                 }
             }
         }
     }
-    for (vi at = prev[K][m][n]; not at.empty(); at = prev[at[0]][at[1]][at[2]]) {
+    cout << '[' << ' ';
+    for (vi at = prev[m][n][K]; not at.empty(); at = prev[at[0]][at[1]][at[2]]) {
         if (at[3] == 1) {
-            cout << arr1[at[1]] << ' ';
+            cout << arr1[at[0]] << ' ';
         }
         else if (at[3] == 2) {
-            cout << '(' << arr1[at[1]] << "->" << arr2[at[2]] << ')' << ' ';
+            cout << '+' << arr1[at[0]] << ' ';
         }
     }
-    cout << '\n';
-    return dp[K][m][n];
+    cout << ']' << ' ';
+    return dp[m][n][K];
 }
 
 int main() { TimeMeasure _; __x();

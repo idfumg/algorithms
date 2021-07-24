@@ -1,84 +1,93 @@
 #include "../../template.hpp"
 
-void find_subsequences(const string& s, set<string>& seqs, string& current,const int from) {
-    if (from >= s.size()) {
+void find_subsequences(string s, set<string>& seqs, string& current, int n) {
+    if (n == 0) {
         seqs.insert(current);
         return;
     }
-    for (int i = from; i < s.size(); ++i) {
-        current.push_back(s[i]);
-        find_subsequences(s, seqs, current, i + 1);
-        current.pop_back();
-        find_subsequences(s, seqs, current, i + 1);
-    }
+    find_subsequences(s, seqs, current, n - 1);
+    current.push_back(s[n - 1]);
+    find_subsequences(s, seqs, current, n - 1);
+    current.pop_back();
 }
 
-set<string> find_subsequences(const string& s) {
+set<string> find_subsequences(string s) {
     set<string> seqs;
     string current;
-    find_subsequences(s, seqs, current, 0);
+    find_subsequences(s, seqs, current, s.size());
     return seqs;
 }
 
-int brute(const string& s1, const string& s2) {
-    const set<string> s1parts = find_subsequences(s1);
-    const set<string> s2parts = find_subsequences(s2);
+int brute(string s1, string s2) {
+    const auto s1parts = find_subsequences(s1);
+    const auto s2parts = find_subsequences(s2);
 
-    set<string> result;
+    int ans = INF;
     for (const auto& part : s1parts) {
-        if (s2parts.count(part) == 0) {
-            result.insert(part);
+        if (not s2parts.count(part)) {
+            ans = min(ans, (int)part.size());
         }
     }
-    return result.size() != 0 ? result.begin()->size() : -1;
+    return ans == INF ? -1 : ans;
 }
 
-int rec(const string& s1, const string& s2, const int n1, const int n2) {
-    if (n1 == 0) return INF;
-    if (n2 == 0) return 1;
+set<string> FindSubseqs(string s) {
+    int n = s.size();
+    set<string> ans;
+    for (int i = 0; i < (1 << n); ++i) {
+        string temp;
+        for (int j = 0; j < n; ++j) {
+            if (i & (1 << j)) {
+                temp += s[j];
+            }
+        }
+        ans.insert(move(temp));
+    }
+    return ans;
+}
 
-    int k = n2;
-    for (; k > 0; --k) {
-        if (s2[k - 1] == s1[n1 - 1]) {
-            break;
+int brute2(string a, string b) {
+    const auto first = FindSubseqs(a);
+    const auto second = FindSubseqs(b);
+
+    size_t ans = INF;
+    for (const auto& subseq : first) {
+        if (not second.count(subseq)) {
+            ans = min(ans, subseq.size());
         }
     }
+    return ans == INF ? -1 : ans;
+}
+
+int rec(string a, string b, int m, int n) {
+    if (m == 0) return INF; // nothing in the a that is not in the b
+    if (n == 0) return 1; // everything in the a not in the b
+
+    int k = n; // find if the current character exists in the b
+    for (; k > 0 and a[m - 1] != b[k - 1]; --k) {}
     if (k == 0) return 1;
 
-    return min(rec(s1, s2, n1 - 1, n2),
-               1 + rec(s1, s2, n1 - 1, k - 1));
+    return min(1 + rec(a, b, m - 1, k - 1), rec(a, b, m - 1, n)); // append or not
 }
 
-int rec(const string& s1, const string& s2) {
-    const auto res = rec(s1, s2, s1.size(), s2.size());
-    return res == INF ? -1 : res;
+int rec(string a, string b) {
+    int ans = rec(a, b, a.size(), b.size());
+    return ans == INF ? -1 : ans;
 }
 
-int tab(const string& s1, const string& s2) {
-    const int m = s1.size();
-    const int n = s2.size();
-    vvi dp(m + 1, vi(n + 1, 0));
+int tab(string a, string b) {
+    int m = a.size();
+    int n = b.size();
+    vvi dp(m + 1, vi(n + 1, INF));
     for (int i = 0; i <= m; ++i) {
         for (int j = 0; j <= n; ++j) {
-            if (i == 0) {
-                dp[i][j] = INF;
-            }
-            else if (j == 0) {
-                dp[i][j] = 1;
-            }
+            if (i == 0) dp[i][j] = INF;
+            else if (j == 0) dp[i][j] = 1;
             else {
                 int k = j;
-                for (; k > 0; --k) {
-                    if (s2[k - 1] == s1[i - 1]) {
-                        break;
-                    }
-                }
-                if (k == 0) {
-                    dp[i][j] = 1;
-                }
-                else {
-                    dp[i][j] = min(dp[i - 1][j], 1 + dp[i - 1][k - 1]);
-                }
+                for (; k > 0 and a[i - 1] != b[k - 1]; --k) {}
+                if (k == 0) dp[i][j] = 1;
+                else dp[i][j] = min(1 + dp[i - 1][k - 1], dp[i - 1][j]);
             }
         }
     }
@@ -86,12 +95,15 @@ int tab(const string& s1, const string& s2) {
 }
 
 int main() { TimeMeasure _; __x();
-    static const string s11 = "babab", s12 = "babba";
-    static const string s21 = "abb", s22 = "abab";
-    cout << brute(s11, s12) << endl;
-    cout << brute(s21, s22) << endl;
-    cout << rec(s11, s12) << endl;
-    cout << rec(s21, s22) << endl;
-    cout << tab(s11, s12) << endl;
-    cout << tab(s21, s22) << endl;
+    cout << brute("babab", "babba") << endl; // 3
+    cout << brute("abb", "abab") << endl; // -1
+    cout << endl;
+    cout << brute2("babab", "babba") << endl; // 3
+    cout << brute2("abb", "abab") << endl; // -1
+    cout << endl;
+    cout << rec("babab", "babba") << endl; // 3
+    cout << rec("abb", "abab") << endl; // -1
+    cout << endl;
+    cout << tab("babab", "babba") << endl; // 3
+    cout << tab("abb", "abab") << endl; // -1
 }

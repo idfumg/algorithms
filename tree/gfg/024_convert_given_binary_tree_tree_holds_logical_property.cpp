@@ -1,18 +1,6 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 bool convert(Node* root) {
     if (not root) return false;
@@ -29,7 +17,7 @@ int main() { TimeMeasure _; __x();
     root->right->left = new Node(1);
     root->right->right = new Node(1);
 
-    inorder(root); cout << endl;
+    cout << root << endl; // 0 1 1 0 1 0 1
     convert(root);
-    inorder(root); // 0 0 1 0 1 1 1
+    cout << root << endl; // 0 0 1 0 1 1 1
 }

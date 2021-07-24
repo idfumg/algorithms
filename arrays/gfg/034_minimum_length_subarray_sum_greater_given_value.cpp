@@ -1,23 +1,23 @@
 #include "../../template.hpp"
 
-int tab2(vi arr, int k) {
+int tab2(vi arr, int target) {
     int n = arr.size();
     int window = 0;
-    int mincount = INF;
-    int left = 0;
-    int right = 0;
-    while (left < n or right < n) {
-        if (window <= k and right < n) {
-            window += arr[right++];
-        }
-        else {
-            window -= arr[left++];
-        }
-        if (window > k) {
-            mincount = min(mincount, right - left);
+    int windowSize = 0;
+    int windowStart = 0;
+    int ans = INF;
+    for (int i = 0; i < n; ++i) {
+        window += arr[i];
+        ++windowSize;
+        while (window > target) {
+            if (windowSize < ans) {
+                ans = windowSize;
+            }
+            window -= arr[windowStart++];
+            --windowSize;
         }
     }
-    return mincount == INF ? -1 : mincount;
+    return ans;
 }
 
 int main() { TimeMeasure _;

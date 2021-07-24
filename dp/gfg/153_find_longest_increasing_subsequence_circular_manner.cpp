@@ -17,16 +17,14 @@ int tab1(vi arr) {
     return max(dp);
 }
 
-int tab2(vi& arr) {
+int tab2(vi arr) {
     int m = arr.size();
-    int n = m * 2;
+    int n = 2 * m;
     vi dp(n, 1);
-    for (int i = 1; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
         for (int j = 0; j < i; ++j) {
-            int idxi = i % m;
-            int idxj = j % m;
-            if (arr[idxi] > arr[idxj]) {
-                dp[idxi] = max(dp[idxi], dp[idxj] + 1);
+            if (arr[i % m] > arr[j % m]) {
+                dp[i % m] = max(dp[i % m], dp[j % m] + 1);
             }
         }
     }

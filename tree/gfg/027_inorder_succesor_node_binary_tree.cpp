@@ -1,25 +1,19 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root, Node* pivot, Node*& prev, int& ans) {
-    if (not root) return;
-    inorder(root->left, pivot, prev, ans);
-    if (prev and prev == pivot) ans = root->value;
+std::optional<int> inorderSuccesor(Node* root, Node* node, Node*& prev) {
+    if (not root) return std::nullopt;
+    if (const auto ans = inorderSuccesor(root->left, node, prev)) return ans;
+    if (prev and prev == node) return root->value;
     prev = root;
-    inorder(root->right, pivot, prev, ans);
+    return inorderSuccesor(root->right, node, prev);
 }
 
-void inorderSuccesor(Node* root, Node* pivot) {
+void inorderSuccesor(Node* root, Node* node) {
     Node* prev = nullptr;
-    int ans = -1;
-    inorder(root, pivot, prev, ans);
-    cout << ans << endl;
+    const auto ans = inorderSuccesor(root, node, prev);
+    cout << ans.value_or(-1) << endl;
 }
 
 int main() { TimeMeasure _; __x();

@@ -1,34 +1,24 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_list(root); return os; }
 
-void print(Node* head) {
-    for (; head; head = head->right) cout << head->value << ' ';
-}
-
-void convert(Node* root, Node*& head, Node*& curr) {
+void inorder(Node* root, Node*& head, Node*& curr) {
     if (not root) return;
-    convert(root->left, head, curr);
+    inorder(root->left, head, curr);
     if (not head) {
-        head = new Node(root->value);
-        curr = head;
+        curr = head = new Node(root->value);
     }
     else {
-        curr->right = new  Node(root->value);
+        curr->right = new Node(root->value);
         curr = curr->right;
     }
-    convert(root->right, head, curr);
+    inorder(root->right, head, curr);
 }
 
 Node* convert(Node* root) {
     Node* head = nullptr;
     Node* curr = nullptr;
-    convert(root, head, curr);
+    inorder(root, head, curr);
     return head;
 }
 
@@ -41,5 +31,5 @@ int main() { TimeMeasure _; __x();
     root->right->left = new Node(36);
 
     Node* head = convert(root);
-    print(head); // 25 12 30 10 36 15
+    cout << head << endl; // 25 12 30 10 36 15
 }

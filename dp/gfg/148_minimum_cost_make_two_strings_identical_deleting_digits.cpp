@@ -1,40 +1,41 @@
 #include "../../template.hpp"
 
-int SumOfDigits(const string& s, int from, int count) {
-    int res = 0;
-    for (int i = from; i < from + count; ++i) {
-        res += s[i] - '0';
+vi GetCosts(string s) {
+    int n = s.size();
+    vi prefix(n + 1);
+    for (int i = 1; i <= n; ++i) {
+        prefix[i] = prefix[i - 1] + s[i - 1] - '0';
     }
-    return res;
+    return prefix;
 }
 
-int rec(const string& a, const string& b, int m, int n) { // naive
-    if (m == 0 and n != 0) return SumOfDigits(b, 0, n);
-    if (n == 0 and m != 0) return SumOfDigits(a, 0, m);
-    if (m == 0 and n == 0) return 0;
-    if (a[m - 1] == b[n - 1]) return rec(a, b, m - 1, n - 1);
-    return min({rec(a, b, m - 1, n) + (a[m - 1] - '0'),
-                rec(a, b, m, n - 1) + (b[n - 1] - '0')});
+int rec(string a, string b, vi& prefixa, vi& prefixb, int m, int n) {
+    if (m == 0) return prefixb[n];
+    if (n == 0) return prefixa[m];
+    if (a[m - 1] == b[n - 1]) return rec(a, b, prefixa, prefixb, m - 1, n - 1);
+    return min(rec(a, b, prefixa, prefixb, m - 1, n) + a[m - 1] - '0',
+               rec(a, b, prefixa, prefixb, m, n - 1) + b[n - 1] - '0');
 }
 
-int rec(const string& a, const string& b) {
-    return rec(a, b, a.size(), b.size());
+int rec(string a, string b) {
+    vi prefixa = GetCosts(a);
+    vi prefixb = GetCosts(b);
+    return rec(a, b, prefixa, prefixb, a.size(), b.size());
 }
 
-int tab1(const string& a, const string& b) { // we can print exact elems here
-    int m = a.size(), n = b.size();
-    vvi dp(m + 1, vi(n + 1));
-    for (int i = 1; i <= m; ++i) {
-        dp[i][0] = SumOfDigits(a, 0, i);
-    }
-    for (int j = 1; j <= n; ++j) {
-        dp[0][j] = SumOfDigits(b, 0, j);
-    }
-    for (int i = 1; i <= m; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            dp[i][j] = min({a[i - 1] == b[j - 1] ? dp[i - 1][j - 1] : INF,
-                            dp[i - 1][j] + a[i - 1] - '0',
-                            dp[i][j - 1] + b[j - 1] - '0'});
+int tab1(string a, string b) {
+    int m = a.size();
+    int n = b.size();
+    vi prefixa = GetCosts(a);
+    vi prefixb = GetCosts(b);
+    vvi dp(m + 1, vi(n + 1, 0));
+    for (int i = 0; i <= m; ++i) {
+        for (int j = 0; j <= n; ++j) {
+            if (i == 0) dp[i][j] = prefixb[j];
+            else if (j == 0) dp[i][j] = prefixa[i];
+            else if (a[i - 1] == b[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+            else dp[i][j] = min(dp[i - 1][j] + a[i - 1] - '0',
+                                dp[i][j - 1] + b[j - 1] - '0');
         }
     }
     return dp[m][n];
@@ -42,6 +43,8 @@ int tab1(const string& a, const string& b) { // we can print exact elems here
 
 int tab2(const string& a, const string& b) { // we can just find answer fast here
     int m = a.size(), n = b.size();
+    vi prefixa = GetCosts(a);
+    vi prefixb = GetCosts(b);
     vvi dp(m + 1, vi(n + 1, INF));
     for (int i = 0; i <= m; ++i) {
         for (int j = 0; j <= n; ++j) {
@@ -56,10 +59,7 @@ int tab2(const string& a, const string& b) { // we can just find answer fast her
             }
         }
     }
-    int total = 0;
-    for (int i = 0; i < m; ++i) total += a[i] - '0';
-    for (int i = 0; i < n; ++i) total += b[i] - '0';
-    return total - dp[m][n];
+    return prefixa[m] + prefixb[n] - dp[m][n];
 }
 
 int main() { TimeMeasure _; __x();

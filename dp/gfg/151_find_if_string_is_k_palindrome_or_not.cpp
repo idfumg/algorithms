@@ -32,25 +32,22 @@ bool tab2(const string& a, int k) { // longest palindromic subsequence
 
 bool tab3(string s, int K) { // How many charachater we should delete from 1..n
     int n = s.size();
-    vvi dp(n + 1, vi(n + 1));
-
-    for (int i = 2; i <= n; ++i) {
-        if (s[i - 2] != s[i - 1]) {
-            dp[i - 1][i] = 1;
+    vvi dp(n + 2, vi(n + 1));
+    for (int i = 1; i <= n; ++i) {
+        dp[i][i] = 0;
+    }
+    for (int i = 1; i < n; ++i) {
+        if (s[i - 1] != s[i]) {
+            dp[i][i + 1] = 1;
         }
     }
-
     for (int k = 2; k <= n; ++k) {
         for (int i = 1, j = i + k; j <= n; ++i, ++j) {
-            if (s[i - 1] == s[j - 1]) {
-                dp[i][j] = dp[i + 1][j - 1];
-            }
-            else {
-                dp[i][j] = min(dp[i + 1][j], dp[i][j - 1]) + 1;
+            if (s[i - 1] != s[j - 1]) {
+                dp[i][j] = 1 + min(dp[i + 1][j], dp[i][j - 1]);
             }
         }
     }
-
     return dp[1][n] <= K;
 }
 

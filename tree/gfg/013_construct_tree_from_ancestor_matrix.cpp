@@ -1,39 +1,26 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 Node* construct(vvi arr) {
     priority_queue<pi, vpi, greater<pi>> pq;
     int n = arr.size();
     vector<Node*> nodes(n);
     for (int i = 0; i < n; ++i) {
-        int children = accumulate(arr[i].begin(), arr[i].end(), 0);
-        pq.push({children, i});
         nodes[i] = new Node(i);
+        pq.push({reduce(arr[i].begin(), arr[i].end(), 0), i});
     }
-    vb used(n);
+    vb visited(n);
     Node* root = nullptr;
     while (not pq.empty()) {
-        const auto& [children, at] = pq.top(); pq.pop();
+        const auto [childrenCount, at] = pq.top(); pq.pop();
         root = nodes[at];
-        if (children == 0) continue;
-        for (int i = 0; i < n; ++i) {
-            if (not used[i] and arr[at][i]) {
-                used[i] = true;
-                if (not nodes[at]->left) nodes[at]->left = nodes[i];
-                else if (not nodes[at]->right) nodes[at]->right = nodes[i];
+        if (childrenCount == 0) continue;
+        for (int adj = 0; adj < n; ++adj) {
+            if (not visited[adj] and arr[at][adj]) {
+                if (not root->left) root->left = nodes[adj];
+                else if (not root->right) root->right = nodes[adj];
+                visited[adj] = true;
             }
         }
     }
@@ -50,5 +37,5 @@ int main() { TimeMeasure _; __x();
          { 1, 1, 1, 1, 1, 0 }};
 
     Node* root = construct(arr); // 0 1 4 5 3 2
-    inorder(root);
+    cout << root << endl;
 }

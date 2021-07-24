@@ -1,12 +1,5 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
 void preorder(Node* root) {
     if (not root) return;
     cout << root->value << ' ';
@@ -45,6 +38,7 @@ bool IsSumSame(Node* root) {
     inorder_middle(root, uncovered, covered);
     int coveredSum = accumulate(covered.begin(), covered.end(), 0);
 
+    debug(uncoveredSum); debugn(coveredSum);
     return uncoveredSum == coveredSum;
 }
 

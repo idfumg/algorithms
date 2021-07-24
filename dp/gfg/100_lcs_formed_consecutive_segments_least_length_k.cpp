@@ -14,23 +14,20 @@ int Count(string a, string b, int m, int n) {
     return Count(a, b, m, n, 0);
 }
 
-int rec(string a, string b, int k, int m, int n, int total) {
+int rec(string a, string b, int k, int m, int n) {
     if (m <= 0 or n <= 0) {
-        return total;
+        return 0;
     }
     if (a[m - 1] == b[n - 1]) {
-        int count = Count(a, b, m , n);
-        if (count >= k) {
-            return rec(a, b, k, m - count, n - count, total + count);
-        }
+        int count = 0;
+        for (int i = m, j = n; i >= 1 and j >= 1 and a[i - 1] == b[j - 1]; --i, --j) ++count;
+        return (count >= k ? count : 0) + rec(a, b, k, m - count, n - count);
     }
-    return max(rec(a, b, k, m - 1, n, total),
-               rec(a, b, k, m, n - 1, total));
+    return max(rec(a, b, k, m - 1, n), rec(a, b, k, m, n - 1));
 }
 
 int rec(string a, string b, int k) {
-    int m = a.size(), n = b.size();
-    return rec(a, b, k, m, n, 0);
+    return rec(a, b, k, a.size(), b.size());
 }
 
 int rec2(string a, string b, int k, int m, int n) {
@@ -68,21 +65,22 @@ int tab(string a, string b, int k) {
 }
 
 int tab_precount(string a, string b, int k) {
-    int m = a.size(), n = b.size();
-    vvi count(m + 1, vi(n + 1));
+    int m = a.size();
+    int n = b.size();
+    vvi precount(m + 1, vi(n + 1));
     for (int i = 1; i <= m; ++i) {
         for (int j = 1; j <= n; ++j) {
             if (a[i - 1] == b[j - 1]) {
-                count[i][j] = 1 + count[i - 1][j - 1];
+                precount[i][j] = 1 + precount[i - 1][j - 1];
             }
         }
     }
-
     vvi dp(m + 1, vi(n + 1));
     for (int i = 1; i <= m; ++i) {
         for (int j = 1; j <= n; ++j) {
-            if (a[i - 1] == b[j - 1] and count[i][j] >= k) {
-                dp[i][j] = max({dp[i - count[i][j]][j - count[i][j]] + count[i][j], dp[i - 1][j], dp[i][j - 1]});
+            if (a[i - 1] == b[j - 1]) {
+                int count = precount[i][j];
+                dp[i][j] = (count >= k ? count : 0) + dp[i - count][j - count];
             }
             else {
                 dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);

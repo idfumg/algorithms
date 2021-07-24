@@ -1,21 +1,15 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value;
-    Node* left;
-    Node* right;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 void levelorder(Node* root) {
-    if (not root) return;
-    queue<Node*> q;
-    q.push(root);
+    deque<Node*> q;
+    q.push_back(root);
     while (not q.empty()) {
-        Node* at = q.front(); q.pop();
+        Node* at = q.front(); q.pop_front();
         cout << at->value << ' ';
-        if (at->left) q.push(at->left);
-        if (at->right) q.push(at->right);
+        if (at->left) q.push_back(at->left);
+        if (at->right) q.push_back(at->right);
     }
 }
 

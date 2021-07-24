@@ -96,6 +96,30 @@ int tab3(int n) {
     return max(dp[idx]);
 }
 
+int rec_easy(int n, int prev) {
+    if (n == 0) return 1;
+    if (prev == 0) {
+        return rec_easy(n - 1, 0) + rec_easy(n - 1, 1);
+    }
+    return rec_easy(n - 1, 0);
+}
+
+int rec_easy(int n) {
+    return rec_easy(n - 1, 0) + rec_easy(n - 1, 1);
+}
+
+int tab_easy(int n) {
+    vvi dp(n + 1, vi(n + 2));
+    for (int i = 0; i <= n; ++i) {
+        for (int j : {0, 1}) {
+            if (i == 0) dp[i][j] = 1;
+            else if (j == 0) dp[i][j] = dp[i - 1][0] + dp[i - 1][1];
+            else dp[i][j] = dp[i - 1][0];
+        }
+    }
+    return dp[n - 1][0] + dp[n - 1][1];
+}
+
 int main() { TimeMeasure _; __x();
     cout << rec(2) << endl;
     cout << rec(3) << endl;
@@ -109,4 +133,9 @@ int main() { TimeMeasure _; __x();
     cout << tab2(3) << endl;
     cout << tab3(2) << endl;
     cout << tab3(3) << endl;
+    cout << rec_easy(2) << endl; // 3
+    cout << rec_easy(3) << endl; // 5
+    cout << endl;
+    cout << tab_easy(2) << endl; // 3
+    cout << tab_easy(3) << endl; // 5
 }

@@ -1,42 +1,25 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
-
-Node* ConstructCompleteBinaryTree(vi level) {
+void ConstructCompleteBinaryTree(vi level) {
     int idx = 0;
+    deque<Node*> q;
     Node* root = new Node(level[idx++]);
-    deque<Node*> pq;
-    pq.push_back(root);
-    while (not pq.empty()) {
-        int n = pq.size();
-        for (int i = 0; i < n; ++i) {
-            Node* at = pq.front(); pq.pop_front();
-            if (idx < level.size()) {
-                at->left = new Node(level[idx++]);
-                pq.push_back(at->left);
-            }
-            if (idx < level.size()) {
-                at->right = new Node(level[idx++]);
-                pq.push_back(at->right);
-            }
+    q.push_back(root);
+    while (not q.empty() and idx < level.size()) {
+        Node* node = q.front(); q.pop_front();
+        node->left = new Node(level[idx++]);
+        q.push_back(node->left);
+        if (idx < level.size()) {
+            node->right = new Node(level[idx++]);
+            q.push_back(node->right);
         }
     }
-    return root;
+    cout << root << endl;
 }
 
 int main() { TimeMeasure _; __x();
-    Node* root = ConstructCompleteBinaryTree({1, 2, 3, 4, 5, 6, 6, 6, 6});
-    inorder(root); // 6 4 6 2 5 1 6 3 6
+    vi level = { 1, 2, 3, 4, 5, 6, 6, 6, 6 };
+    ConstructCompleteBinaryTree(level); // 6 4 6 2 5 1 6 3 6
 }

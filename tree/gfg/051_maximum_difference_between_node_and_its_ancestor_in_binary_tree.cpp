@@ -1,22 +1,17 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
-void traverse(Node* root, int& ans, int prevmax) {
+void inorder(Node* root, int& ans, int ancestor) {
     if (not root) return;
-    ans = max(ans, prevmax - root->value);
-    traverse(root->left, ans, max(prevmax, root->value));
-    traverse(root->right, ans, max(prevmax, root->value));
+    ans = max(ans, ancestor - root->value);
+    inorder(root->left, ans, max(ancestor, root->value));
+    inorder(root->right, ans, max(ancestor, root->value));
 }
 
 int MaxDiff(Node* root) {
     int ans = 0;
-    traverse(root, ans, -1);
+    inorder(root, ans, root->value);
     return ans;
 }
 
@@ -27,6 +22,7 @@ int main() { TimeMeasure _; __x();
     root->left->right = new Node(6);
     root->left->right->left = new Node(4);
     root->left->right->right = new Node(7);
+
     root->right = new Node(10);
     root->right->right = new Node(14);
     root->right->right->left = new Node(13);

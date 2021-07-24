@@ -1,28 +1,25 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value;
-    Node* left;
-    Node* right;
-    Node(int value) : value(value), left(nullptr), right(nullptr) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_postorder(root); return os; }
 
-void PrintPostorder(vi inorder, vi preorder, unordered_map<int, int>& map, int& root, int i, int j) {
-    if (i > j) return;
-    int rootIdx = map[preorder[root++]];
-    PrintPostorder(inorder, preorder, map, root, i, rootIdx - 1);
-    PrintPostorder(inorder, preorder, map, root, rootIdx + 1, j);
-    cout << inorder[rootIdx] << ' ';
+Node* construct(vi in, vi pre, unordered_map<int, int>& tab, int& idx, int i, int j) {
+    if (i > j or idx == in.size()) return nullptr;
+    int rootValue = pre[idx++];
+    int k = tab[rootValue];
+    Node* root = new Node(rootValue);
+    root->left = construct(in, pre, tab, idx, i, k - 1);
+    root->right = construct(in, pre, tab, idx, k + 1, j);
+    return root;
 }
 
-void PostorderTraversal(vi inorder, vi preorder) {
-    unordered_map<int, int> map;
-    int n = inorder.size();
-    for (int i = 0; i < n; ++i) {
-        map[inorder[i]] = i;
+void PostorderTraversal(vi in, vi pre) {
+    unordered_map<int, int> tab;
+    for (int i = 0; i < in.size(); ++i) {
+        tab[in[i]] = i;
     }
-    int root = 0;
-    PrintPostorder(inorder, preorder, map, root, 0, n - 1);
+    int idx = 0;
+    Node* root = construct(in, pre, tab, idx, 0, in.size() - 1);
+    cout << root << endl;
 }
 
 int main() { TimeMeasure _; __x();

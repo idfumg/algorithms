@@ -1,34 +1,22 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root) {
+void preorder(Node* root, int target, vector<Node*>& path) {
     if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
-
-void inorder(Node* root, vector<Node*>& in, int key) {
-    if (not root) return;
-    if (in.empty() or in.back()->value != key) in.push_back(root);
-    inorder(root->left, in, key);
-    inorder(root->right, in, key);
-}
-
-void reverseTreePath(Node* root, int key) {
-    vector<Node*> in;
-    inorder(root, in, key);
-
-    int n = in.size();
-    for (int i = 0; i < n / 2; ++i) {
-        swap(in[i]->value, in[n - i - 1]->value);
+    path.push_back(root);
+    if (path.back()->value == target) {
+        for (int i = 0, j = path.size() - 1; i <= j; ++i, --j) {
+            swap(path[i]->value, path[j]->value);
+        }
     }
+    preorder(root->left, target, path);
+    preorder(root->right, target, path);
+}
+
+void reverseTreePath(Node* root, int target) {
+    vector<Node*> path;
+    preorder(root, target, path);
 }
 
 int main() { TimeMeasure _; __x();
@@ -48,6 +36,7 @@ int main() { TimeMeasure _; __x();
 4   3 2   1
 */
 
+    cout << root << endl; // 4 6 3 7 2 5 1
     reverseTreePath(root, 4);
-    inorder(root); // 7 6 3 4 2 5 1
+    cout << root << endl; // 7 6 3 4 2 5 1
 }

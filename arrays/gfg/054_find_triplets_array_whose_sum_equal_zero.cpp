@@ -1,23 +1,27 @@
 #include "../../template.hpp"
 
+int LowerBound(vi arr, int from, int key) {
+    int n = arr.size(), low = from, high = n - 1;
+    while (low != high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] < key) low = mid + 1;
+        else high = mid;
+    }
+    return low;
+}
+
 void FindTriplets(vi arr) {
-    int n = arr.size();
-    int total = 0;
     sort(arr.begin(), arr.end());
-    for (int i = 0; i < n - 2; ++i) {
-        int left = i + 1;
-        int right = n - 1;
-        while (left < right) {
-            int sum = arr[left] + arr[right];
-            if (sum + arr[i] == total) {
-                cout << arr[i] << ' ' << arr[left] << ' ' << arr[right] << endl;
-                break;
+    int n = arr.size();
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n - 1; ++j) {
+            int x = -(arr[i] + arr[j]);
+            int idx = LowerBound(arr, j + 1, x);
+            if (arr[idx] == x) {
+                cout << arr[i] << ' ' << arr[j] << ' ' << x << endl;
             }
-            if (sum + arr[i] < total) ++left;
-            else --right;
         }
     }
-    cout << endl;
 }
 
 int main() { TimeMeasure _;

@@ -1,18 +1,6 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
-void Inorder(Node* root) {
-    if (not root) return;
-    Inorder(root->left);
-    cout << root->value << ' ';
-    Inorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 // Node* Insert(Node* root, int value) {
 //     if (not root) return new Node(value);
@@ -116,16 +104,16 @@ int main() { TimeMeasure _; __x();
     root = Insert(root, 60);
     root = Insert(root, 80);
 
-    Inorder(root); cout << endl; // 20 30 40 50 60 70 80
+    cout << root << endl; // 20 30 40 50 60 70 80
 
     cout << Search(root, 60)->value << endl; // 60
 
     root = Delete(root, 20);
-    Inorder(root);  cout << endl; // 30 40 50 60 70 80
+    cout << root << endl; // 30 40 50 60 70 80
 
     root = Delete(root, 30);
-    Inorder(root); cout << endl; // 40 50 60 70 80
+    cout << root << endl; // 40 50 60 70 80
 
     root = Delete(root, 50);
-    Inorder(root); cout << endl; // 40 60 70 80
+    cout << root << endl; // 40 60 70 80
 }

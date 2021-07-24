@@ -80,33 +80,30 @@ int rec_straight(const string& s) {
 }
 
 int tab_straight(const string& s) {
-    int n = s.size();
-    int sum = 0;
-    for (int i = 0; i < n; ++i) {
-        sum += s[i] - '0';
-    }
-    vvvi dp(n + 1, vvi(sum + 1, vi(sum + 1)));
-    for (int i = 0; i <= sum; ++i) {
-        for (int j = 0; j <= sum; ++j) {
-            if (i <= j) {
-                dp[0][i][j] = 1;
-            }
-        }
-    }
-    for (int i = 1; i <= n; ++i) {
-        for (int left = 0; left <= sum; ++left) {
-            for (int right = 0; right <= sum; ++right) {
-                if (left > right) continue;
-                if (left + s[i - 1] - '0' <= right) {
-                    dp[i][left][right] = dp[i - 1][left + s[i - 1] - '0'][right];
+        int n = s.size();
+
+    int total = 0;
+    for (char ch : s) total += ch - '0';
+
+    vvvi dp(n + 1, vvi(total + 10, vi(total + 1)));
+    for (int i = 0; i <= n; ++i) {
+        for (int j = total; j >= 0; --j) {
+            for (int k = 0; k <= total; ++k) {
+                if (j > k) {
+                    dp[i][j][k] = 0;
                 }
-                if (s[i - 1] - '0' <= left) {
-                    dp[i][left][right] += dp[i - 1][s[i - 1] - '0'][left];
+                else if (i == 0) {
+                    dp[0][j][k] = 1;
+                }
+                else {
+                    dp[i][j][k] =
+                        dp[i - 1][j + s[i - 1] - '0'][k] +
+                        dp[i - 1][s[i - 1] - '0'][j];
                 }
             }
         }
     }
-    return dp[n][0][sum];
+    return dp[n][0][total];
 }
 
 int tab_straight2(string s) {

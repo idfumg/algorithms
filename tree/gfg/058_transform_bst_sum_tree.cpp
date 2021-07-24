@@ -1,18 +1,6 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 void inorder(Node* root, vi& in) {
     if (not root) return;
@@ -46,17 +34,24 @@ void transform(Node* root) {
     inorder(root, in, idx);
 }
 
-void inorder_inverse(Node* root, int& sum) {
+void inorder(Node* root, int& sum) {
     if (not root) return;
-    inorder_inverse(root->right, sum);
-    sum += root->value;
-    root->value = sum - root->value;
-    inorder_inverse(root->left, sum);
+    inorder(root->right, sum);
+    if (sum == -INF) {
+        sum = root->value;
+    }
+    else {
+        int temp = root->value;
+        root->value = sum;
+        sum += temp;
+    }
+    inorder(root->left, sum);
 }
 
 void transform2(Node* root) {
-    int sum = 0;
-    inorder_inverse(root, sum);
+    if (not root) return;
+    int sum = -INF;
+    inorder(root, sum);
 }
 
 int main() { TimeMeasure _; __x();
@@ -70,9 +65,9 @@ int main() { TimeMeasure _; __x();
         root->right->right = new Node(40);
         root->right->right->left = new Node(35);
 
-        inorder(root); cout << endl; // 1 2 7 11 15 29 35 40
+        cout << root << endl; // 1 2 7 11 15 29 35 40
         transform(root);
-        inorder(root); cout << endl; // 139 137 130 119 104 75 40 0
+        cout << root << endl << endl; // 139 137 130 119 104 75 40 0
     }
     {
         Node* root = new Node(11);
@@ -84,8 +79,8 @@ int main() { TimeMeasure _; __x();
         root->right->right = new Node(40);
         root->right->right->left = new Node(35);
 
-        inorder(root); cout << endl; // 1 2 7 11 15 29 35 40
+        cout << root << endl; // 1 2 7 11 15 29 35 40
         transform2(root);
-        inorder(root); cout << endl; // 139 137 130 119 104 75 40 0
+        cout << root << endl << endl; // 139 137 130 119 104 75 40 0
     }
 }

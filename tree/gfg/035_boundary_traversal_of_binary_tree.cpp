@@ -1,37 +1,32 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void traverse_left(Node* root) {
+void go_left(Node* root) {
     if (not root) return;
     if (not root->left and not root->right) return;
     cout << root->value << ' ';
-    traverse_left(root->left);
+    go_left(root->left);
 }
 
-void traverse_right(Node* root) {
+void go_right(Node* root) {
     if (not root) return;
     if (not root->left and not root->right) return;
-    traverse_right(root->right);
+    go_right(root->right);
     cout << root->value << ' ';
 }
 
-void traverse_leaves(Node* root) {
+void go_leaves(Node* root) {
     if (not root) return;
     if (not root->left and not root->right) cout << root->value << ' ';
-    traverse_leaves(root->left);
-    traverse_leaves(root->right);
+    go_leaves(root->left);
+    go_leaves(root->right);
 }
 
 void PrintBoundary(Node* root) {
-    traverse_left(root);
-    traverse_leaves(root);
-    traverse_right(root->right);
+    go_left(root);
+    go_leaves(root);
+    go_right(root->right);
 }
 
 int main() { TimeMeasure _; __x();

@@ -1,38 +1,23 @@
 #include "../../template.hpp"
 
-struct Node {
-    char value = -1;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
-void preorder(Node* root) {
-    if (not root) return;
-    cout << root->value << ' ';
-    preorder(root->left);
-    preorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
 Node* construct(string s, int& idx) {
-    int n = s.size();
-    if (idx == n) return nullptr;
-    Node* root = new Node(s[idx++]);
-    if (idx < n and s[idx++] == '(') {
-        root->left = construct(s, idx);
-    }
-    if (idx < n and s[idx++] == '(') {
-        root->right = construct(s, idx);
-    }
+    if (idx == s.size()) return nullptr;
+    Node* root = new Node(s[idx++] - '0');
+    if (idx != s.size() and s[idx] == '(') root->left = construct(s, ++idx);
+    if (idx != s.size() and s[idx] == '(') root->right = construct(s, ++idx);
+    ++idx;
     return root;
 }
 
-Node* construct(string s) {
+void construct(string s) {
     int idx = 0;
-    return construct(s, idx);
+    Node* root = construct(s, idx);
+    cout << root << endl;
 }
 
 int main() { TimeMeasure _; __x();
-    preorder(construct("1(2)(3)")); cout << endl; // 1 2 3
-    preorder(construct("4(2(3)(1))(6(5))")); // 4 2 3 1 6 5
+    construct("1(2)(3)"); // 1 2 3
+    construct("4(2(3)(1))(6(5))"); // 4 2 3 1 6 5
 }

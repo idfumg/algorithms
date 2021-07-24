@@ -1,53 +1,36 @@
 #include "../../template.hpp"
 
-struct Node {
-    char value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
+string preorder(Node* root) {
+    if (not root) return "";
+    return to_string(root->value) + preorder(root->left) + preorder(root->right);
 }
 
-void getSubtree(Node* root, string& subtree) {
-    if (not root) return;
-    subtree += root->value;
-    getSubtree(root->left, subtree);
-    getSubtree(root->right, subtree);
-}
-
-bool traverse(Node* root, unordered_set<string>& subtrees) {
+bool preorder(Node* root, unordered_set<string>& subtrees) {
     if (not root) return false;
 
-    string subtree;
-    getSubtree(root, subtree);
-    if (subtree.size() >= 2) {
-        if (subtrees.count(subtree)) return true;
-        else subtrees.insert(subtree);
-    }
+    const string tree = preorder(root);
+    if (subtrees.count(tree)) return true;
+    else if (tree.size() > 1) subtrees.insert(tree);
 
-    return traverse(root->left, subtrees) or traverse(root->right, subtrees);
+    return preorder(root->left, subtrees) or preorder(root->right, subtrees);
 }
 
 bool HasDuplicateSubTree(Node* root) {
     unordered_set<string> subtrees;
-    return traverse(root, subtrees);
+    return preorder(root, subtrees);
 }
 
 int main() { TimeMeasure _; __x();
-    Node* root = new Node('A');
-    root->left = new Node('B');
-    root->right = new Node('C');
-    root->left->left = new Node('D');
-    root->left->right = new Node('E');
-    root->right->right = new Node('B');
-    root->right->right->right = new Node('E');
-    root->right->right->left= new Node('D');
+    Node* root = new Node(1);
+    root->left = new Node(2);
+    root->right = new Node(4);
+    root->left->left = new Node(5);
+    root->left->right = new Node(3);
+    root->right->right = new Node(2);
+    root->right->right->right = new Node(3);
+    root->right->right->left= new Node(5);
 
     cout << HasDuplicateSubTree(root) << endl; // 1
 }

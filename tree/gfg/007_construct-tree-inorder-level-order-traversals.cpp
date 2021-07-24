@@ -1,49 +1,41 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = INF;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
-
-vi MakeLevelOrder(vi in, vi level, int key, int i, int j) {
-    unordered_set<int> map;
-    for (int k = i; k <= j; ++k) {
-        map.insert(in[k]);
+vi getLevel(vi in, vi level, int i, int j) {
+    unordered_set<int> nodes;
+    for (; i <= j; ++i) {
+        nodes.insert(in[i]);
     }
-    vi order;
-    for (int v : level) {
-        if (map.count(v)) {
-            order.push_back(v);
+    vi ans;
+    for (int value : level) {
+        if (nodes.count(value)) {
+            ans.push_back(value);
         }
     }
-    return order;
+    return ans;
 }
 
 Node* construct(vi in, vi level, int i, int j) {
-    if (i > j) return nullptr;
+    if (i > j or level.empty()) return nullptr;
     int rootValue = level[0];
-    int pivot = i;
-    while (pivot <= j and in[pivot] != rootValue) ++pivot;
+    int k = i;
+    while (k <= j and in[k] != rootValue) ++k;
+    vi leftLevel = getLevel(in, level, i, k - 1);
+    vi rightLevel = getLevel(in, level, k + 1, j);
     Node* root = new Node(rootValue);
-    root->left = construct(in, MakeLevelOrder(in, level, rootValue, i, pivot - 1), i, pivot - 1);
-    root->right = construct(in, MakeLevelOrder(in, level, rootValue, pivot + 1, j), pivot + 1, j);
+    root->left = construct(in, leftLevel, i, k - 1);
+    root->right = construct(in, rightLevel, k + 1, j);
     return root;
 }
 
-Node* construct(vi in, vi level) {
-    return construct(in, level, 0, in.size() - 1);
+void Build(vi in, vi level) {
+    Node* root = construct(in, level, 0, in.size() - 1);
+    cout << root << endl;
 }
 
 int main() { TimeMeasure _; __x();
-    Node* root = construct({4, 8, 10, 12, 14, 20, 22}, {20, 8, 22, 4, 12, 10, 14});
-    inorder(root); // 4 8 10 12 14 20 22
+    vi inorder = {4, 8, 10, 12, 14, 20, 22};
+    vi levelorder = {20, 8, 22, 4, 12, 10, 14};
+    Build(inorder, levelorder); // 4 8 10 12 14 20 22
 }

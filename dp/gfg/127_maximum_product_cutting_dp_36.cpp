@@ -105,6 +105,27 @@ int tab3(int n) {
     return dp[n][1];
 }
 
+int rec4(int total, int n, int left) {
+    if (n == 0) return left == total ? 1 : left;
+    return max(rec4(total, n - 1, left + 1), rec4(total, n - 1, 1) * left);
+}
+
+int rec4(int n) {
+    return rec4(n, n - 1, 1);
+}
+
+int tab4(int n) {
+    vvi dp(n + 1, vi(n + 1));
+    for (int i = 0; i <= n; ++i) {
+        for (int j = n; j >= 0; --j) {
+            if (i == 0) dp[i][j] = j == n ? 1 : j;
+            else dp[i][j] = max(dp[i - 1][j + 1], dp[i - 1][1] * j);
+        }
+    }
+    return dp[n - 1][1];
+}
+
+
 int main() { TimeMeasure _; __x();
     cout << rec(2) << endl; // 1
     cout << rec(3) << endl; // 2
@@ -141,4 +162,16 @@ int main() { TimeMeasure _; __x();
     cout << tab3(4) << endl; // 4
     cout << tab3(5) << endl; // 6
     cout << tab3(10) << endl; // 36
+    cout << endl;
+    cout << rec4(2) << endl; // 1
+    cout << rec4(3) << endl; // 2
+    cout << rec4(4) << endl; // 4
+    cout << rec4(5) << endl; // 6
+    cout << rec4(10) << endl; // 36
+    cout << endl;
+    cout << tab4(2) << endl; // 1
+    cout << tab4(3) << endl; // 2
+    cout << tab4(4) << endl; // 4
+    cout << tab4(5) << endl; // 6
+    cout << tab4(10) << endl; // 36
 }

@@ -33,6 +33,32 @@ int naive(vi& arr) {
     return all.size();
 }
 
+int naive2(vi arr) {
+    int n = arr.size();
+    int ans = 0;
+    for (int i = 1; i < (1 << n); ++i) {
+        int prev = INF;
+        int count = 0;
+        int current = 0;
+        for (int j = n - 1; j >= 0; --j) {
+            if (i & (1 << j)) {
+                ++count;
+                if (arr[j] < prev) {
+                    ++current;
+                    prev = arr[j];
+                }
+                else {
+                    prev = -INF;
+                }
+            }
+        }
+        if (current == count) {
+            ++ans;
+        }
+    }
+    return ans;
+}
+
 int tab(vi& arr) {
     int n = arr.size();
     vvi dp(n + 1, vi(n + 1));
@@ -64,6 +90,11 @@ int main() { TimeMeasure _; __x();
     cout << naive(arr1) << endl; // 15
     cout << naive(arr2) << endl; // 8
     cout << naive(arr3) << endl; // 14
+    cout << endl;
+    cout << naive2(arr1) << endl; // 15
+    cout << naive2(arr2) << endl; // 8
+    cout << naive2(arr3) << endl; // 14
+    cout << endl;
     cout << tab(arr1) << endl; // 15
     cout << tab(arr2) << endl; // 8
     cout << tab(arr3) << endl; // 14

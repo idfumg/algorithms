@@ -1,32 +1,16 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
-void preorder(Node* root) {
-    if (not root) return;
-    cout << root->value << ' ';
-    preorder(root->left);
-    preorder(root->right);
-}
+ostream& operator<<(ostream& os, Node* root) { print_preorder(root); return os; }
 
 Node* modify(Node* root) {
     if (not root) return nullptr;
-
     Node* left = modify(root->left);
     Node* right = modify(root->right);
-
-    root->right = left;
     root->left = nullptr;
-
-    Node* curr = left;
+    root->right = left;
+    Node* curr = root->right;
     while (curr and curr->right) curr = curr->right;
     if (curr) curr->right = right;
-
     return root;
 }
 
@@ -45,5 +29,5 @@ int main() { TimeMeasure _; __x();
     root->left->right = new Node(5);
 
     modify(root);
-    preorder(root); // 10 8 3 5 2
+    cout << root << endl; // 10 8 3 5 2
 }

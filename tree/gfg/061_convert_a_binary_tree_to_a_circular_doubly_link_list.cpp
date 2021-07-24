@@ -1,22 +1,6 @@
 #include "../../template.hpp"
 
-struct Node {
-    int value = -100;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value) {}
-};
-
-void inorder(Node* root) {
-    if (not root) return;
-    inorder(root->left);
-    cout << root->value << ' ';
-    inorder(root->right);
-}
-
-void print_list(Node* head) {
-    for (; head; head = head->right) cout << head->value << ' ';
-}
+ostream& operator<<(ostream& os, Node* root) { print_inorder(root); return os; }
 
 void inorder(Node* root, Node*& head, Node*& curr) {
     if (not root) return;

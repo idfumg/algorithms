@@ -36,6 +36,27 @@ int naive(vi& arr, int k) {
     return res;
 }
 
+int naive2(vi arr, int K) {
+    int n = arr.size();
+    int ans = INF;
+    for (int i = 0; i < (1 << n); ++i) {
+        int sum = 0;
+        int prev = INF;
+        int k = 0;
+        for (int j = n - 1; j > 0 and k <= K; --j) {
+            if (i & (1 << j) and prev >= arr[j]) {
+                sum += arr[j];
+                prev = arr[j];
+                ++k;
+            }
+        }
+        if (k == K) {
+            ans = min(ans, sum);
+        }
+    }
+    return ans;
+}
+
 int tab(vi& arr, int K) {
     int n = arr.size();
     vvi dp(K + 1, vi(n + 1, INF));
@@ -62,6 +83,10 @@ int main() { TimeMeasure _; __x();
     cout << naive(arr1, k1) << '\n'; // 39
     cout << naive(arr2, k2) << '\n'; // 120
     cout << naive(arr3, k3) << '\n'; // 206
+    cout << '\n';
+    cout << naive2(arr1, k1) << '\n'; // 39
+    cout << naive2(arr2, k2) << '\n'; // 120
+    cout << naive2(arr3, k3) << '\n'; // 206
     cout << '\n';
     cout << tab(arr1, k1) << '\n'; // 39
     cout << tab(arr2, k2) << '\n'; // 120
