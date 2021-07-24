@@ -7,15 +7,22 @@ using namespace std;
 #define endl '\n'
 #define MOD static_cast<int64_t>(1e9 + 7)
 #define PI (3.1415926535897932384626433832795)
-#define INF static_cast<int32_t>(1e9)
 #define LLINF static_cast<int64_t>(1e18)
 #define EPS (1e-9)
+
+#define INF static_cast<int32_t>(1e9)
+using vi = vector<int>;
+using vvi = vector<vi>;
+using vvvi = vector<vvi>;
+using vvvvi = vector<vvvi>;
+using vb = vector<bool>;
+using vvb = vector<vb>;
+using vvvb = vector<vvb>;
 
 using ld = long double;
 using ll = int64_t;
 using ull = uint64_t;
 using vd = vector<double>;
-using vi = vector<int>;
 using cvi = const vector<int>&;
 using vll = vector<ll>;
 using pi = pair<int, int>;
@@ -26,19 +33,13 @@ using vvpi = vector<vpi>;
 using cvvpi = const vector<vpi>&;
 using vvvpi = vector<vvpi>;
 using vvvvpi = vector<vvvpi>;
-using vvi = vector<vi>;
 using cvvi = const vector<vi>&;
 using vvd = vector<vd>;
-using vvvi = vector<vvi>;
 using cvvvi = const vector<vvi>&;
-using vvvvi = vector<vvvi>;
 using vvll = vector<vll>;
 using vvvll = vector<vvll>;
-using vb = vector<bool>;
 using cvb = const vector<bool>&;
-using vvb = vector<vb>;
 using cvvb = const vector<vb>&;
-using vvvb = vector<vvb>;
 using si = set<int>;
 using csi = const set<int>&;
 using sll = set<ll>;
