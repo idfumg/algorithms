@@ -1,23 +1,18 @@
 #include "../../template.hpp"
 
-int rec2(const string& s, const int i, const int j) {
-    if (i >= j) return 0;
+int rec_(const string& s, const int i, const int j) {
+    if (i > j) return 0;
     if (j - i == 1) return s[i - 1] != s[j - 1];
-    if (s[i - 1] == s[j - 1]) return rec2(s, i + 1, j - 1);
-    return 1 + rec2(s, i + 1, j - 1);
+    if (s[i - 1] == s[j - 1]) return rec_(s, i + 1, j - 1);
+    return rec_(s, i + 1, j - 1) + 1;
 }
 
-int rec2(const string& s) {
-    return rec2(s, 1, s.size());
-}
-
-int rec(const string& s, const int k, const int n, const int length) {
+int rec(const string& s, const int k, const int n, const int count) {
+    if (n == 0 and k == 0) return 0;
     if (n == 0 and k > 0) return INF;
     if (n != 0 and k == 0) return INF;
-    if (n == 0 and k == 0) return 0;
-
-    const int changes = rec2(s, n, n + length - 1);
-    return min(rec(s, k, n - 1, length + 1), rec(s, k - 1, n - 1, 1) + changes);
+    const int changes = rec_(s, n, n + count - 1);
+    return min(rec(s, k, n - 1, count + 1), rec(s, k - 1, n - 1, 1) + changes);
 }
 
 int rec(const string& s, const int k) {
@@ -25,7 +20,7 @@ int rec(const string& s, const int k) {
 }
 
 int tab(const string& s, const int K) {
-    int n = s.size();
+    const int n = s.size();
     vvi changes(n + 2, vi(n + 1));
     for (int i = n; i >= 1; --i) {
         for (int j = 1; j <= n; ++j) {
@@ -35,23 +30,25 @@ int tab(const string& s, const int K) {
             else changes[i][j] = 1 + changes[i + 1][j - 1];
         }
     }
-    vvvi dp(K + 1, vvi(n + 1, vi(n + 2, INF)));
-    for (int k = 0; k <= K; ++k) {
-        for (int i = 0; i <= n; ++i) {
-            for (int j = n; j >= 1; --j) {
-                if (i == 0 and k != 0) dp[k][i][j] = INF;
-                else if (i != 0 and k == 0) dp[k][i][j] = INF;
-                else if (i == 0 and k == 0) dp[k][i][j] = 0;
+    int idx = 0;
+    vvvi dp(n + 1, vvi(n + 2, vi(K + 1, INF)));
+    for (int i = 0; i <= n; ++i) {
+        idx = i & 1;
+        for (int j = n; j >= 1; --j) {
+            for (int k = 0; k <= K; ++k) {
+                if (k == 0 and i == 0) dp[idx][j][k] = 0;
+                else if (i == 0 and k > 0) dp[idx][j][k] = INF;
+                else if (i != 0 and k == 0) dp[idx][j][k] = INF;
                 else {
-                    dp[k][i][j] = dp[k][i - 1][j + 1];
-                    if (i + j - 1 >= 0 and i + j - 1 <= n) {
-                        dp[k][i][j] = min(dp[k][i][j], dp[k - 1][i - 1][1] + changes[i][i + j - 1]);
+                    dp[idx][j][k] = dp[1 - idx][j + 1][k];
+                    if (i + j - 1 <= n and i + j - 1 >= 0) {
+                        dp[idx][j][k] = min(dp[idx][j][k], dp[1 - idx][1][k - 1] + changes[i][i + j - 1]);
                     }
                 }
             }
         }
     }
-    return dp[K][n][1];
+    return dp[idx][1][K];
 }
 
 int main() { TimeMeasure _; __x();
