@@ -17,11 +17,12 @@ int rec_straight(const vi& arr, const int n, map<vi, int>& tab) {
 
     const int a = n == 1 ? 1 : arr[n - 2];
     const int b = n == arr.size() ? 1 : arr[n];
+    const int cost = a * arr[n - 1] * b;
     const vi newarr = NewArr(arr, n);
 
     return tab[arr] = max(
         rec_straight(arr, n - 1, tab),
-        rec_straight(newarr, newarr.size(), tab) + a * arr[n - 1] * b);
+        rec_straight(newarr, newarr.size(), tab) + cost);
 }
 
 int rec_straight(const vi& arr) {
@@ -33,7 +34,8 @@ int rec(vi& arr, const int i, const int j) {
     if (i > j) return 0;
     int ans = 0;
     for (int k = i; k <= j; ++k) {
-        ans = max(ans, rec(arr, i, k - 1) + arr[i - 1] * arr[k] * arr[j + 1] + rec(arr, k + 1, j));
+        const int cost = arr[i - 1] * arr[k] * arr[j + 1];
+        ans = max(ans, rec(arr, i, k - 1) + cost + rec(arr, k + 1, j));
     }
     return ans;
 }
@@ -55,13 +57,12 @@ int tab(vi arr) {
                 dp[i][j] = 0;
             }
             else {
+                int ans = 0;
                 for (int k = i; k <= j; ++k) {
-                    dp[i][j] = max(dp[i][j],
-
-                                   dp[i][k - 1] +
-                                   arr[i - 2] * arr[k - 1] * arr[j] +
-                                   dp[k + 1][j]);
+                    const int cost = arr[i - 2] * arr[k - 1] * arr[j];
+                    ans = max(ans, dp[i][k - 1] + cost + dp[k + 1][j]);
                 }
+                dp[i][j] = ans;
             }
         }
     }
