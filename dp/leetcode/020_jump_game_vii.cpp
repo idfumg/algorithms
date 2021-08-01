@@ -1,36 +1,48 @@
 #include "../../template.hpp"
 
-bool rec(const string& s, const int x, const int y, const int n, vi& dp) {
-    if (n <= 1) return dp[n] = true;
-    if (s[n - 1] == '1') return dp[n] = false;
-    if (dp[n] != -1) return dp[n];
-    for (int k = x; k <= y and n - k >= 0; ++k) {
-        if (rec(s, x, y, n - k, dp)) {
-            return dp[n] = true;
+int rec(const string& s, const int x, const int y, const int n) {
+    if (n >= s.size() - 1) return 1;
+    for (int k = x; k <= y; ++k) {
+        if (n + k < s.size() and s[n + k] == '0') {
+            if (rec(s, x, y, n + k)) {
+                return 1;
+            }
         }
     }
-    return dp[n] = false;
+    return 0;
 }
 
-bool rec(const string& s, const int x, const int y) {
-    vi dp(s.size() + 1, -1);
-    return rec(s, x, y, s.size(), dp);
+int rec(const string& s, const int x, const int y) {
+    return rec(s, x, y, 0);
 }
 
-bool tab(const string& s, const int x, const int y) {
+int tab(const string& s, const int x, const int y) {
     const int n = s.size();
-    vi dp(n + 1, 0);
-    dp[1] = 1;
-    multiset<int> set{};
-    for (int i = x; i <= n; ++i) {
-        if (i - y - 1 >= 1) set.erase(set.find(dp[i - y - 1]));
-
-        if (s[i - 1] == '1') dp[i] = 0;
-        else if (not set.empty()) dp[i] = *crbegin(set);
-
-        set.insert(dp[i - x + 1]);
+    vi dp(n);
+    dp[n - 1] = 1;
+    for (int i = n - 2; i >= 0; --i) {
+        for (int k = x; k <= y; ++k) {
+            if (i + k < n and s[i + k] == '0') {
+                if (dp[i + k] == 1) {
+                    dp[i] = 1;
+                }
+            }
+        }
     }
-    return dp[n];
+    return dp[0];
+}
+
+int tab2(const string& s, const int x, const int y) {
+    const int n = s.size();
+    vi dp(n);
+    dp[0] = 1;
+    multiset<int> window = {dp[0]};
+    for (int i = x; i < n; ++i) {
+        if (i - y - 1 >= 0) window.erase(window.find(dp[i - y - 1]));
+        if (not window.empty() and s[i] == '0') dp[i] = *window.crbegin();
+        window.insert(dp[i - x + 1]);
+    }
+    return dp[n - 1];
 }
 
 int main() { TimeMeasure _; __x();
@@ -43,4 +55,9 @@ int main() { TimeMeasure _; __x();
     cout << tab("01101110", 2, 3) << endl; // 0
     cout << tab("00111010", 3, 5) << endl; // 0
     cout << tab("00", 1, 1) << endl; // 1
+    cout << endl;
+    cout << tab2("011010", 2, 3) << endl; // 1
+    cout << tab2("01101110", 2, 3) << endl; // 0
+    cout << tab2("00111010", 3, 5) << endl; // 0
+    cout << tab2("00", 1, 1) << endl; // 1
 }
