@@ -1,65 +1,63 @@
 #include "../../template.hpp"
 
-int naive(int number) {
-    int count = 0;
-    for (int i = 1; i <= number; ++i) {
-        for (int n = i; n > 0; n /= 10) {
-            if (n % 10 == 1) {
-                ++count;
-            }
+ll naive(ll n) {
+    ll ans = 0;
+    for (ll i = 1; i <= n; ++i) {
+        for (ll j = i; j > 0; j /= 10) {
+            ans += j % 10 == 1;
         }
     }
-    return count;
+    return ans;
 }
 
-int rec_(int n) {
-    if (n <= 0) return 0;
-    return rec_(n / 10) + (n % 10 == 1 ? 1 : 0);
-}
-
-int rec(int n) {
-    if (n <= 0) return 0;
-    int digits = log10(n);
-    int x = digits / 2;
-    int y = pow(10, x);
-    return rec_(n / y) + rec_(n % y) + rec(n - 1);
-}
-
-int tab(const int n) {
+ll rec_(ll n) {
     if (n == 0) return 0;
-    if (n < 10) return 1;
-    vi dp_(1e9);
-    vi dp(2);
-    int idx = 0;
-    dp[1] = dp_[1] = 1;
-    for (int i = 2; i <= n; ++i) {
-        idx = i & 1;
-        dp_[i] = dp_[i / 10] + (i % 10 == 1);
-        dp[idx] = dp_[i] + dp[1 - idx];
+    return (n % 10 == 1) + rec_(n / 10);
+}
+
+ll rec(ll n) {
+    if (n == 0) return 0;
+    return rec(n - 1) + rec_(n);
+}
+
+ll tab(ll n) {
+    vi count(n + 1);
+    vi dp(n + 1);
+    for (ll i = 1; i <= n; ++i) {
+        count[i] = (i % 10 == 1) + count[i / 10];
+        dp[i] = dp[i - 1] + count[i];
     }
-    return dp[idx];
+    return dp[n];
 }
 
-long long fast(int n) {
+ll fast(ll n) {
     if (n == 0) return 0;
-    long long count = 0;
-    for (long long factor = 1; n / factor> 0; factor *= 10) {
-        const long long lowern = n - (n / factor) * factor;
-        const long long currentn = (n / factor) % 10;
-        const long long highern = n / (factor * 10);
+    ll count = 0;
+    for (ll factor = 1; n / factor > 0; factor *= 10) {
+        const ll low = n - (n / factor) * factor;
+        const ll d = (n / factor) % 10;
+        const ll high = n / (factor * 10);
 
-        switch (currentn) {
+        switch (d) {
         case 0:
-            count += highern * factor;
+            count += high * factor;
             break;
         case 1:
-            count += highern * factor + (lowern + 1);
+            count += high * factor + (low + 1);
             break;
         default:
-            count += (highern + 1) * factor;
+            count += (high + 1) * factor;
         }
     }
     return count;
+}
+
+ll fast_rec(const ll n) {
+    if (n <= 0) return 0;
+    if (n < 10) return 1;
+    const ll base = pow(10, (ll)log10(n));
+    const ll first = n / base;
+    return fast_rec(base - 1) * first + (first == 1 ? (n - base + 1) : base) + fast_rec(n % base);
 }
 
 int main() { TimeMeasure _; __x();
@@ -87,4 +85,11 @@ int main() { TimeMeasure _; __x();
     cout << fast(723) << endl; // 253
     cout << fast(224883294) << endl; // 287944060
     cout << fast(824883294) << endl; // 767944060
+    cout << endl;
+    cout << fast_rec(13) << endl; // 6
+    cout << fast_rec(0) << endl; // 0
+    cout << fast_rec(20) << endl; // 12
+    cout << fast_rec(723) << endl; // 253
+    cout << fast_rec(224883294) << endl; // 287944060
+    cout << fast_rec(824883294) << endl; // 767944060
 }
