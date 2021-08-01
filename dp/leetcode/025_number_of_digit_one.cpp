@@ -1,83 +1,77 @@
 #include "../../template.hpp"
 
-ll naive(ll n) {
-    ll ans = 0;
-    for (ll i = 1; i <= n; ++i) {
-        for (ll j = i; j > 0; j /= 10) {
+int naive(const int n) {
+    int ans = 0;
+    for (int i = 1; i <= n; ++i) {
+        for (int j = i; j > 0; j /= 10) {
             ans += j % 10 == 1;
         }
     }
     return ans;
 }
 
-ll rec_(ll n) {
+int rec_(const int n) {
     if (n == 0) return 0;
-    return (n % 10 == 1) + rec_(n / 10);
+    return rec_(n / 10) + (n % 10 == 1);
 }
 
-ll rec(ll n) {
+int rec(const int n) {
     if (n == 0) return 0;
     return rec(n - 1) + rec_(n);
 }
 
-ll tab(ll n) {
+int tab(const int n) {
     vi count(n + 1);
     vi dp(n + 1);
-    for (ll i = 1; i <= n; ++i) {
-        count[i] = (i % 10 == 1) + count[i / 10];
+    for (int i = 1; i <= n; ++i) {
+        count[i] = count[i / 10] + (i % 10 == 1);
         dp[i] = dp[i - 1] + count[i];
     }
     return dp[n];
 }
 
-ll fast(ll n) {
-    if (n == 0) return 0;
-    ll count = 0;
-    for (ll factor = 1; n / factor > 0; factor *= 10) {
-        const ll low = n - (n / factor) * factor;
-        const ll d = (n / factor) % 10;
-        const ll high = n / (factor * 10);
-
-        switch (d) {
-        case 0:
-            count += high * factor;
-            break;
-        case 1:
-            count += high * factor + (low + 1);
-            break;
-        default:
-            count += (high + 1) * factor;
-        }
+int fast(const int n) {
+    int ans = 0;
+    for (int factor = 1; factor <= n; factor *= 10) {
+        const int d = (n / factor) % 10;
+        const int left = (n / factor) / 10;
+        const int right = n % factor;
+        if (d == 0) ans += (left * factor);
+        else if (d == 1) ans += (left * factor) + (right + 1);
+        else ans += (left + 1) * factor;
     }
-    return count;
+    return ans;
 }
 
-ll fast_rec(const ll n) {
-    if (n <= 0) return 0;
+int fast_rec(const int n) {
+    if (n == 0) return 0;
     if (n < 10) return 1;
-    const ll base = pow(10, (ll)log10(n));
-    const ll first = n / base;
-    return fast_rec(base - 1) * first + (first == 1 ? (n - base + 1) : base) + fast_rec(n % base);
+    const int factor = pow(10, (int)log10(n));
+    const int d = n / factor;
+    return d * fast_rec(factor - 1) + (d != 1 ? factor : (n - factor + 1)) + fast_rec(n % factor);
 }
 
 int main() { TimeMeasure _; __x();
     cout << naive(13) << endl; // 6
     cout << naive(0) << endl; // 0
     cout << naive(20) << endl; // 12
-    cout << naive(224883294) << endl; // 287944060
-    //cout << naive(824883294) << endl; // 767944060
+    cout << 253 << endl; // 253
+    cout << 287944060 << endl; // 287944060
+    cout << 767944060 << endl; // 767944060
     cout << endl;
     cout << rec(13) << endl; // 6
     cout << rec(0) << endl; // 0
     cout << rec(20) << endl; // 12
-    //cout << rec(824883294) << endl; // 767944060
+    cout << 253 << endl; // 253
+    cout << 287944060 << endl; // 287944060
+    cout << 767944060 << endl; // 767944060
     cout << endl;
     cout << tab(13) << endl; // 6
     cout << tab(0) << endl; // 0
     cout << tab(20) << endl; // 12
     cout << tab(723) << endl; // 253
     cout << tab(224883294) << endl; // 287944060
-    //cout << tab(824883294) << endl; // 767944060
+    cout << 767944060 << endl; // 767944060
     cout << endl;
     cout << fast(13) << endl; // 6
     cout << fast(0) << endl; // 0
