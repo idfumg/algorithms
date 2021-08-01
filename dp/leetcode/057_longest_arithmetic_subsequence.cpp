@@ -3,13 +3,12 @@
 int tab(const vi& arr) {
     const int n = arr.size();
     int ans = 0;
-    const auto [mini, maxi] = minmax_element(arr.cbegin(), arr.cend());
-    const int diffmax = *maxi - *mini;
     vvi dp(n + 1, vi(2000, 0));
-    for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-            const int d = arr[j] - arr[i] + 1000;
-            ans = max(ans, dp[j][d] = max(2, dp[i][d] + 1));
+    for (int i = 1; i < n; ++i) {
+        for (int j = 0; j < i; ++j) {
+            const int d = arr[i] - arr[j] + 1000;
+            dp[i][d] = max(2, dp[j][d] + 1);
+            ans = max(ans, dp[i][d]);
         }
     }
     return ans;
