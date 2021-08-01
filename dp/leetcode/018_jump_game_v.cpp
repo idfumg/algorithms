@@ -1,65 +1,49 @@
 #include "../../template.hpp"
 
-// vvi MakeGraph(const vi& arr, const int d) {
-//     const int n = arr.size();
-//     vvi graph(n);
-//     for (int i = 0; i < n; ++i) {
-//         graph[i].push_back(i);
-//         for (int j = 1; j <= d and i + j < n; ++j) {
-//             if (arr[i] <= arr[i + j]) break;
-//             graph[i].push_back(i + j);
-//         }
-//         for (int j = 1; j <= d and i - j >= 0; ++j) {
-//             if (arr[i] <= arr[i - j]) break;
-//             graph[i].push_back(i - j);
-//         }
-//     }
-//     return graph;
-// }
-
-int dfs(const vvi& graph, vi& dp, const int at) {
-    dp[at] = 1;
-    for (int adj : graph[at]) {
-        if (dp[adj] != -1) dp[at] = max(dp[at], dp[adj] + 1);
-        else dp[at] = max(dp[at], dfs(graph, dp, adj) + 1);
-    }
-    return dp[at];
-}
-
-vvi MakeGraph(const vi& arr, const int d) {
-    const int n = arr.size();
-    vvi graph(n);
-    stack<int> st;
-    for (int i = 0; i < n; ++i) {
-        while (not st.empty() and arr[st.top()] < arr[i]) {
-            if (abs(i - st.top()) <= d) graph[i].push_back(st.top());
-            st.pop();
+int dfs(const vvi& graph, vb& visited, const int at) {
+    int count = 1;
+    for (const int adj : graph[at]) {
+        if (not visited[adj]) {
+            visited[adj] = true;
+            count = max(count, dfs(graph, visited, adj) + 1);
+            visited[adj] = false;
         }
-        st.push(i);
     }
-    while (not st.empty()) st.pop();
-    for (int i = n - 1; i >= 0; --i) {
-        while (not st.empty() and arr[st.top()] < arr[i]) {
-            if (abs(i - st.top()) <= d) graph[i].push_back(st.top());
-            st.pop();
-        }
-        st.push(i);
-    }
-    return graph;
+    return count;
 }
 
 int tab(const vi& arr, const int d) {
     const int n = arr.size();
-    vvi graph = MakeGraph(arr, d);
-    vi dp(n, -1);
 
-    int count = 0;
+    vvi graph(n);
+
+    deque<int> mq;
     for (int i = 0; i < n; ++i) {
-        if (dp[i] == -1) {
-            count = max(count, dfs(graph, dp, i));
+        while (not mq.empty() and arr[i] > arr[mq.back()]) {
+            if (abs(i - mq.back()) <= d) {
+                graph[i].push_back(mq.back());
+            }
+            mq.pop_back();
         }
+        mq.push_back(i);
     }
-    return count;
+    mq.clear();
+    for (int i = n - 1; i >= 0; --i) {
+        while (not mq.empty() and arr[i] > arr[mq.back()]) {
+            if (abs(i - mq.back()) <= d) {
+                graph[i].push_back(mq.back());
+            }
+            mq.pop_back();
+        }
+        mq.push_back(i);
+    }
+
+    int ans = 0;
+    for (int i = 0; i < n; ++i) {
+        vb visited(n);
+        ans = max(ans, dfs(graph, visited, i));
+    }
+    return ans;
 }
 
 int main() { TimeMeasure _; __x();
