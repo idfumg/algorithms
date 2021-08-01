@@ -2,24 +2,16 @@
 
 int tab(const vi& arr) {
     const int n = arr.size();
-    if (n < 2) return 0;
     int left = 0;
     int right = n - 1;
-    int leftmax = arr[left];
-    int rightmax = arr[right];
-    int water = 0;
+    int ans = 0;
     while (left < right) {
-        water = max(water, (right - left) * min(leftmax, rightmax));
-        if (leftmax <= rightmax) {
-            ++left;
-            leftmax = max(leftmax, arr[left]);
-        }
-        else {
-            --right;
-            rightmax = max(rightmax, arr[right]);
-        }
+        const int area = min(arr[left], arr[right]) * (right - left);
+        ans = max(ans, area);
+        if (arr[left] <= arr[right]) ++left;
+        else --right;
     }
-    return water;
+    return ans;
 }
 
 int main() { TimeMeasure _; __x();
