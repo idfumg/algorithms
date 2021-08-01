@@ -1,15 +1,15 @@
 #include "../../template.hpp"
 
-int rec(const vi& arr, const int i, const int j, const int isalex) {
+int rec(const vi& arr, const int i, const int j, const int p) {
     if (i > j) return 0;
-    if (isalex) return max(rec(arr, i + 1, j, !isalex) + arr[i - 1],
-                           rec(arr, i, j - 1, !isalex) + arr[j - 1]);
-    return max(rec(arr, i + 1, j, !isalex) - arr[i - 1],
-               rec(arr, i, j - 1, !isalex) - arr[j - 1]);
+    if (p == 0) return max(rec(arr, i + 1, j, 1 - p) + arr[i - 1],
+                           rec(arr, i, j - 1, 1 - p) + arr[j - 1]);
+    return min(rec(arr, i + 1, j, 1 - p) - arr[i - 1],
+               rec(arr, i, j - 1, 1 - p) - arr[j - 1]);
 }
 
 int rec(const vi& arr) {
-    return rec(arr, 1, arr.size(), 1) > 0;
+    return rec(arr, 1, arr.size(), 0) > 0;
 }
 
 int tab(const vi& arr) {
@@ -17,16 +17,22 @@ int tab(const vi& arr) {
     vvvi dp(n + 2, vvi(n + 1, vi(2)));
     for (int i = n; i >= 1; --i) {
         for (int j = 1; j <= n; ++j) {
-            for (int k : {0, 1}) {
-                if (i > j) dp[i][j][k] = 0;
-                else if (k) dp[i][j][k] = max(dp[i + 1][j][!k] + arr[i - 1],
-                                              dp[i][j - 1][!k] + arr[j - 1]);
-                else dp[i][j][k] = max(dp[i + 1][j][!k] - arr[i - 1],
-                                       dp[i][j - 1][!k] - arr[j - 1]);
+            for (int p = 1; p >= 0; --p) {
+                if (i > j) {
+                    dp[i][j][p] = 0;
+                }
+                else if (p == 0) {
+                    dp[i][j][p] = max(dp[i + 1][j][1 - p] + arr[i - 1],
+                                      dp[i][j - 1][1 - p] + arr[j - 1]);
+                }
+                else {
+                    dp[i][j][p] = min(dp[i + 1][j][1 - p] - arr[i - 1],
+                                      dp[i][j - 1][1 - p] - arr[j - 1]);
+                }
             }
         }
     }
-    return dp[1][n][1] > 0;
+    return dp[1][n][0] > 0;
 }
 
 int main() { TimeMeasure _; __x();
