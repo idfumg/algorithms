@@ -73,15 +73,12 @@
 //     return rec(arr, prefix, 0, 0, 0, dp);
 // }
 
-int rec(const vi& arr, const vi& prefix, int n, const int player, vvi& dp) {
-    if (dp[n][player] != INF) return dp[n][player];
-    if (n > arr.size() - 1) return 0;
-    if (n == 0) n += 1;
-    if (n + 1 == arr.size()) return prefix[arr.size()];
-
-    return dp[n][player] = max(
-        prefix[n + 1] - rec(arr, prefix, n + 1, 1 - player, dp),
-        rec(arr, prefix, n + 1, player, dp));
+int rec(const vi& arr, const vi& prefix, vi& dp, const int n) {
+    if (n == arr.size()) return prefix[n];
+    if (dp[n] != -INF) return dp[n];
+    return dp[n] = max(
+        prefix[n] - rec(arr, prefix, dp, n + 1),
+        rec(arr, prefix, dp, n + 1));
 }
 
 int rec(const vi& arr) {
@@ -90,42 +87,38 @@ int rec(const vi& arr) {
     for (int i = 1; i <= n; ++i) {
         prefix[i] = prefix[i - 1] + arr[i - 1];
     }
-    vvi dp(n + 1, vi(2, INF));
-    return rec(arr, prefix, 0, 0, dp);
+    vi dp(n + 1, -INF);
+    return rec(arr, prefix, dp, 2);
 }
 
 int tab(const vi& arr) {
     const int n = arr.size();
-    vi prefix(arr.size() + 1);
-    for (int i = 1; i <= arr.size(); ++i) {
+    vi prefix(n + 1);
+    for (int i = 1; i <= n; ++i) {
         prefix[i] = prefix[i - 1] + arr[i - 1];
     }
-    vvi dp(2, vi(2, -INF));
-    int idx = 0;
-    for (int i = n - 1; i >= 0; --i) {
-        idx = i & 1;
-        for (int player : {1, 0}) {
-            if (i + 1 == n) {
-                dp[idx][player] = prefix[i + 1];
-            }
-            else if (i == 0) {
-                if (i + 2 == n) {
-                    dp[idx][player] = prefix[n];
-                }
-                else {
-                    dp[idx][player] = max(
-                        prefix[i + 2] - dp[1 - idx][1 - player],
-                        dp[1 - idx][player]);
-                }
-            }
-            else {
-                dp[idx][player] = max(
-                    prefix[i + 1] - dp[1 - idx][1 - player],
-                    dp[1 - idx][player]);
-            }
-        }
+    vi dp(n + 1, -INF);
+    dp[n] = prefix[n];
+    for (int i = n - 1; i >= 2; --i) {
+        dp[i] = max(prefix[i] - dp[i + 1], dp[i + 1]);
     }
-    return dp[idx][0];
+    return dp[2];
+}
+
+int tab_opt(const vi& arr) {
+    const int n = arr.size();
+    vi prefix(n + 1);
+    for (int i = 1; i <= n; ++i) {
+        prefix[i] = prefix[i - 1] + arr[i - 1];
+    }
+    vi dp(2, -INF);
+    int idx = n & 1;
+    dp[idx] = prefix[n];
+    for (int i = n - 1; i >= 2; --i) {
+        idx = i & 1;
+        dp[idx] = max(prefix[i] - dp[1 - idx], dp[1 - idx]);
+    }
+    return dp[idx];
 }
 
 int main() { TimeMeasure _; __x();
@@ -142,4 +135,11 @@ int main() { TimeMeasure _; __x();
     cout << tab({-39,-23,-43,-7,25,-36,-32,17,-42,-5,-11}) << endl; // 11
     cout << tab({25,-35,-37,4,34,43,16,-33,0,-17,-31,-42,-42,38,12,-5,-43,-10,-37,12}) << endl; // 38
     cout << tab({-53,-56,90,-74,-50,29,37,64,-31,-54,74,-80,-18,-69,-44,73,99,-47,-35,71,-55,-27,34,1,-66,-63,3,-34,33,91,-25,-40,-33,68,-34,-32,69,44,-54}) << endl; // 54
+    cout << endl;
+    cout << tab_opt({-1,2,-3,4,-5}) << endl; // 5
+    cout << tab_opt({7,-6,5,10,5,-2,-6}) << endl; // 13
+    cout << tab_opt({-10,-12}) << endl; // -22
+    cout << tab_opt({-39,-23,-43,-7,25,-36,-32,17,-42,-5,-11}) << endl; // 11
+    cout << tab_opt({25,-35,-37,4,34,43,16,-33,0,-17,-31,-42,-42,38,12,-5,-43,-10,-37,12}) << endl; // 38
+    cout << tab_opt({-53,-56,90,-74,-50,29,37,64,-31,-54,74,-80,-18,-69,-44,73,99,-47,-35,71,-55,-27,34,1,-66,-63,3,-34,33,91,-25,-40,-33,68,-34,-32,69,44,-54}) << endl; // 54
 }
