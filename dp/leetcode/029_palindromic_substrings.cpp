@@ -1,33 +1,29 @@
 #include "../../template.hpp"
 
-int rec_(const string& s, const int i, const int j) {
+int is_pali(const string& s, const int i, const int j) {
     if (i > j) return 1;
-    return s[i - 1] == s[j - 1] and rec_(s, i + 1, j - 1);
+    return s[i - 1] == s[j - 1] and is_pali(s, i + 1, j - 1);
 }
 
 int rec(const string& s, const int i, const int j) {
     if (i > j) return 0;
     if (i == j) return 1;
     if (j - i == 1) return s[i - 1] == s[j - 1] ? 3 : 2;
-    if (s[i - 1] == s[j - 1]) return rec_(s, i, j) + rec(s, i + 1, j) + rec(s, i, j - 1) - rec(s, i + 1, j - 1);
+    if (s[i - 1] == s[j - 1] and is_pali(s, i, j)) return 1 + rec(s, i + 1, j) + rec(s, i, j - 1) - rec(s, i + 1, j - 1);
     return rec(s, i + 1, j) + rec(s, i, j - 1) - rec(s, i + 1, j - 1);
 }
 
 int rec(const string& s) {
-    const int n = s.size();
-    return rec(s, 1, n);
+    return rec(s, 1, s.size());
 }
 
 int tab(const string& s) {
     const int n = s.size();
-    vvi pali(n + 1, vi(n + 1));
+    vvi pali(n + 2, vi(n + 1));
     for (int i = n; i >= 1; --i) {
         for (int j = 1; j <= n; ++j) {
-            if (i > j) pali[i][j] = 0;
-            else if (i == j) pali[i][j] = 1;
-            else if (j - i == 1) pali[i][j] = s[i - 1] == s[j - 1];
-            else if (s[i - 1] == s[j - 1]) pali[i][j] = pali[i + 1][j - 1];
-            else pali[i][j] = 0;
+            if (i > j) pali[i][j] = 1;
+            else pali[i][j] = s[i - 1] == s[j - 1] and pali[i + 1][j - 1];
         }
     }
     vvi dp(n + 2, vi(n + 1));
@@ -36,7 +32,7 @@ int tab(const string& s) {
             if (i > j) dp[i][j] = 0;
             else if (i == j) dp[i][j] = 1;
             else if (j - i == 1) dp[i][j] = s[i - 1] == s[j - 1] ? 3 : 2;
-            else if (s[i - 1] == s[j - 1]) dp[i][j] = pali[i][j] + dp[i + 1][j] + dp[i][j - 1] - dp[i + 1][j - 1];
+            else if (s[i - 1] == s[j - 1] and pali[i][j]) dp[i][j] = 1 + dp[i + 1][j] + dp[i][j - 1] - dp[i + 1][j - 1];
             else dp[i][j] = dp[i + 1][j] + dp[i][j - 1] - dp[i + 1][j - 1];
         }
     }
@@ -53,7 +49,6 @@ int tab2(const string& s) {
             else if (i == j) dp[i][j] = 1;
             else if (j - i == 1) dp[i][j] = s[i - 1] == s[j - 1];
             else if (s[i - 1] == s[j - 1]) dp[i][j] = dp[i + 1][j - 1];
-            else dp[i][j] = 0;
             ans += dp[i][j];
         }
     }
