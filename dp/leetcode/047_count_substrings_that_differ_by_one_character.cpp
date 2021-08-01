@@ -33,16 +33,19 @@ int naive(const string& a, const string& b) {
 int rec(const string& a, const string& b, const int m, const int n, const int k) {
     if (m < 0 or n < 0 or k < 0) return 0;
     if (k == 0 and a[m] != b[n]) return 0;
-    if (a[m] != b[n]) return rec(a, b, m - 1, n - 1, k - 1) + 1;
-    if (k == 0) return rec(a, b, m - 1, n - 1, k) + 1;
+    if (k != 0 and a[m] != b[n]) {
+        return rec(a, b, m - 1, n - 1, k - 1) + 1;
+    }
+    if (k == 0 and a[m] == b[n]) {
+        return rec(a, b, m - 1, n - 1, 0) + 1;
+    }
     return rec(a, b, m - 1, n - 1, k);
 }
 
 int rec(const string& a, const string& b) {
-    const int m = a.size(), n = b.size();
     int ans = 0;
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < n; ++j) {
+    for (int i = 0; i < a.size(); ++i) {
+        for (int j = 0; j < b.size(); ++j) {
             ans += rec(a, b, i, j, 1);
         }
     }
@@ -52,21 +55,35 @@ int rec(const string& a, const string& b) {
 int tab(const string& a, const string& b) {
     const int m = a.size(), n = b.size();
     vvvi dp(m + 1, vvi(n + 1, vi(2)));
-    int ans = 0;
     for (int i = 0; i < m; ++i) {
         dp[i][0][0] = a[i] == b[0] ? 1 : 0;
         dp[i][0][1] = a[i] != b[0] ? 1 : 0;
-        ans += dp[i][0][1];
     }
     for (int j = 1; j < n; ++j) {
         dp[0][j][0] = a[0] == b[j] ? 1 : 0;
         dp[0][j][1] = a[0] != b[j] ? 1 : 0;
-        ans += dp[0][j][1];
     }
     for (int i = 1; i < m; ++i) {
         for (int j = 1; j < n; ++j) {
-            dp[i][j][0] = a[i] == b[j] ? dp[i - 1][j - 1][0] + 1 : 0;
-            dp[i][j][1] = a[i] != b[j] ? dp[i - 1][j - 1][0] + 1 : dp[i - 1][j - 1][1];
+            for (int k : {1, 0}) {
+                if (k == 0 and a[i] != b[j]) {
+                    dp[i][j][k] = 0;
+                }
+                else if (k != 0 and a[i] != b[j]) {
+                    dp[i][j][k] = dp[i - 1][j - 1][0] + 1;
+                }
+                else if (k == 0 and a[i] == b[j]) {
+                    dp[i][j][k] = dp[i - 1][j - 1][0] + 1;
+                }
+                else {
+                    dp[i][j][k] = dp[i - 1][j - 1][k];
+                }
+            }
+        }
+    }
+    int ans = 0;
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
             ans += dp[i][j][1];
         }
     }
