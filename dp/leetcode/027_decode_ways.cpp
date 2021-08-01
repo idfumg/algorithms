@@ -1,36 +1,34 @@
 #include "../../template.hpp"
 
-int rec(const string& s, const int n, const int current, vvi& memo) {
-    if (n > s.size() and 0 < current and current <= 26) return 1;
-    if (current == 0 or n > s.size() or current > 26) return 0;
-    if (memo[n][current] != -1) return memo[n][current];
-
-    const int digit = s[n - 1] - '0';
-    const int a = rec(s, n + 1, current * 10 + digit, memo);
-    const int b = rec(s, n + 1, digit, memo);
-    return memo[n][current] = a + b;
+int rec(const string& s, const int n, const int current, vvi& dp) {
+    if (current < 1 or current > 26) return 0;
+    if (n >= s.size()) return 1;
+    if (dp[n][current] != -INF) return dp[n][current];
+    return dp[n][current] =
+        rec(s, n + 1, current * 10 + s[n] - '0', dp) +
+        rec(s, n + 1, s[n] - '0', dp);
 }
 
 int rec(const string& s) {
-    vvi memo(s.size() + 2, vi(27, -1));
-    return rec(s, 2, s.front() - '0', memo);
+    vvi dp(s.size() + 1, vi(27, -INF));
+    return rec(s, 1, s[0] - '0', dp);
 }
 
 int tab(const string& s) {
     const int n = s.size();
-    vvi dp(n + 2, vi(27));
+    vvi dp(n + 3, vi(27));
     for (int j = 26; j >= 1; --j) {
-        dp[n + 1][j] = 1;
+        dp[n][j] = 1;
     }
-    for (int i = n; i >= 2; --i) {
+    for (int i = n - 1; i >= 1; --i) {
         for (int j = 26; j >= 1; --j) {
-            const int digit = s[i - 1] - '0';
-            const int a = j * 10 + digit <= 26 ? dp[i + 1][j * 10 + digit] : 0;
-            const int b = dp[i + 1][digit];
-            dp[i][j] = a + b;
+            const int d = s[i] - '0';
+            dp[i][j] =
+                (j * 10 + d < 27 ? dp[i + 1][j * 10 + d] : 0) +
+                dp[i + 1][d];
         }
     }
-    return dp[2][s.front() - '0'];
+    return dp[1][s[0] - '0'];
 }
 
 int main() { TimeMeasure _; __x();
