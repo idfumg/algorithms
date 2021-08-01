@@ -37,7 +37,7 @@ int main() { TimeMeasure _; __x();
     cout << rec("011010", 2, 3) << endl; // 1
     cout << rec("01101110", 2, 3) << endl; // 0
     cout << rec("00111010", 3, 5) << endl; // 0
-    cout << tab("00", 1, 1) << endl; // 1
+    cout << rec("00", 1, 1) << endl; // 1
     cout << endl;
     cout << tab("011010", 2, 3) << endl; // 1
     cout << tab("01101110", 2, 3) << endl; // 0
