@@ -1,57 +1,63 @@
 #include "../../template.hpp"
 
-int rec(const vi& arr, const int n, const int one, const int m) {
-    if (n >= arr.size()) {
+int rec(const vi& arr, const int n, const int M, const int p) {
+    if (n > arr.size() - 1) {
         return 0;
     }
-
-    if (one == 1) {
+    if (p == 0) {
         int sum = 0;
         int ans = -INF;
-        for (int i = 1; i <= 2 * m and n + i - 1 < arr.size(); ++i) {
-            sum += arr[n + i - 1];
-            ans = max(ans, sum + rec(arr, n + i, 1 - one, max(i, m)));
+        for (int k = 1; k <= 2 * M; ++k) {
+            if (n + k - 1 < arr.size()) {
+                sum += arr[n + k - 1];
+                ans = max(ans, rec(arr, n + k, max(k, M), 1 - p) + sum);
+            }
         }
         return ans;
     }
-
     int ans = INF;
-    for (int i = 1; i <= 2 * m and n + i - 1 < arr.size(); ++i) {
-        ans = min(ans, rec(arr, n + i, 1 - one, max(i, m)));
+    for (int k = 1; k <= 2 * M; ++k) {
+        if (n + k - 1 < arr.size()) {
+            ans = min(ans, rec(arr, n + k, max(k, M), 1 - p));
+        }
     }
     return ans;
 }
 
 int rec(const vi& arr) {
-    return rec(arr, 0, 1, 1);
+    return rec(arr, 0, 1, 0);
 }
 
 int tab(const vi& arr) {
     const int n = arr.size();
-    vvvi dp(n + 1, vvi(2, vi(n + 1)));
+    vvvi dp(n + 1, vvi(n + 1, vi(2)));
     for (int i = n - 1; i >= 0; --i) {
-        for (int one : {1, 0}) {
-            for (int m = n; m >= 1; --m) {
-                if (one == 1) {
+        for (int m = n - 1; m >= 1; --m) {
+            for (int p : {1, 0}) {
+                if (p == 0) {
                     int sum = 0;
                     int ans = -INF;
-                    for (int k = 1; k <= 2 * m and i + k - 1 < n; ++k) {
-                        sum += arr[i + k - 1];
-                        ans = max(ans, sum + dp[i + k][1 - one][max(k, m)]);
+                    for (int k = 1; k <= 2 * m; ++k) {
+                        if (i + k - 1 < n) {
+                            sum += arr[i + k - 1];
+                            ans = max(ans, sum + dp[i + k][max(k, m)][1 - p]);
+                        }
                     }
-                    dp[i][one][m] = ans;
+                    dp[i][m][p] = ans;
                 }
                 else {
                     int ans = INF;
-                    for (int k = 1; k <= 2 * m and i + k - 1 < n; ++k) {
-                        ans = min(ans, dp[i + k][1 - one][max(k, m)]);
+                    for (int k = 1; k <= 2 * m; ++k) {
+                        if (i + k - 1 < n) {
+                            ans = min(ans, dp[i + k][max(k, m)][1 - p]);
+                        }
                     }
-                    dp[i][one][m] = ans;
+                    dp[i][m][p] = ans;
                 }
             }
         }
     }
-    return dp[0][1][1];
+    return dp[0][1][0];
 }
 
 int main() { TimeMeasure _; __x();
