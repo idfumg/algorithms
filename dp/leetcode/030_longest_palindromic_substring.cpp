@@ -19,23 +19,20 @@ int rec(const string& s) {
 
 string tab(const string& s) {
     const int n = s.size();
-    vvi dp(n + 1, vi(n + 1));
-    int idx = 0;
-    int count = -1;
+    int ans = 0;
+    int count = 0;
+    vvi pali(n + 2, vi(n + 1));
     for (int i = n; i >= 1; --i) {
         for (int j = 1; j <= n; ++j) {
-            if (i > j) dp[i][j] = 0;
-            else if (i == j) dp[i][j] = 1;
-            else if (j - i == 1) dp[i][j] = s[i - 1] == s[j - 1] ? 2 : 1;
-            else if (s[i - 1] == s[j - 1] and dp[i + 1][j - 1] == j - i - 1) dp[i][j] = 2 + j - i - 1;
-            else dp[i][j] = max(dp[i + 1][j], dp[i][j - 1]);
-            if (dp[i][j] == j - i + 1 and dp[i][j] > count) {
+            if (i >= j) pali[i][j] = 1;
+            else pali[i][j] = s[i - 1] == s[j - 1] and pali[i + 1][j - 1];
+            if (pali[i][j] and j - i + 1 > count) {
                 count = j - i + 1;
-                idx = i;
+                ans = i;
             }
         }
     }
-    return s.substr(idx - 1, count);
+    return s.substr(ans - 1, count);
 }
 
 int main() { TimeMeasure _; __x();
