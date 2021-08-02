@@ -30,27 +30,50 @@ int rec_straight(const vi& arr) {
     return rec_straight(arr, arr.size(), tab);
 }
 
-int rec(const vi& arr, const int i, const int j, vvi& dp) {
+int rec(const vi& arr, const int i, const int j) {
     if (i > j) return 0;
-    if (dp[i][j] != -INF) return dp[i][j];
     int ans = -INF;
-    for (int p = i; p <= j; ++p) {
-        const int left = rec(arr, i, p - 1, dp);
-        const int right = rec(arr, p + 1, j, dp);
-        const int cost = arr[i - 1] * arr[p] * arr[j + 1];
-        ans = max(ans, left + right + cost);
+    for (int k = i; k <= j; ++k) {
+        const int cost = arr[i - 1] * arr[k] * arr[j + 1];
+        const int left = rec(arr, i, k - 1);
+        const int right = rec(arr, k + 1, j);
+        ans = max(ans, left + cost + right);
     }
-    return dp[i][j] = ans;
+    return ans;
 }
 
 int rec(vi arr) {
     arr.insert(arr.begin(), 1);
     arr.push_back(1);
-    vvi dp(arr.size(), vi(arr.size(), -INF));
-    return rec(arr, 1, arr.size() - 2, dp);
+    return rec(arr, 1, arr.size() - 2);
 }
 
 int tab(vi arr) {
+    arr.insert(arr.begin(), 1);
+    arr.push_back(1);
+    const int n = arr.size();
+    vvi dp(n + 1, vi(n + 1));
+    for (int i = n - 1; i >= 1; --i) {
+        for (int j = 1; j <= n - 1; ++j) {
+            if (i > j) {
+                dp[i][j] = 0;
+            }
+            else {
+                int ans = -INF;
+                for (int k = i; k <= j; ++k) {
+                    const int cost = arr[i - 1] * arr[k] * arr[j + 1];
+                    const int left = dp[i][k - 1];
+                    const int right = dp[k + 1][j];
+                    ans = max(ans, left + cost + right);
+                }
+                dp[i][j] = ans;
+            }
+        }
+    }
+    return dp[1][n - 2];
+}
+
+int tab2(vi arr) {
     arr.insert(arr.begin(), 1);
     arr.push_back(1);
     const int n = arr.size();
@@ -59,9 +82,9 @@ int tab(vi arr) {
         for (int i = 1, j = i + k; j < n - 1; ++i, ++j) {
             int ans = -INF;
             for (int p = i; p <= j; ++p) {
+                const int cost = arr[i - 1] * arr[p] * arr[j + 1];
                 const int left = dp[i][p - 1];
                 const int right = dp[p + 1][j];
-                const int cost = arr[i - 1] * arr[p] * arr[j + 1];
                 ans = max(ans, left + cost + right);
             }
             dp[i][j] = ans;
@@ -77,15 +100,21 @@ int main() { TimeMeasure _; __x();
     cout << rec_straight({35,16,83,87,84,59,48,41,20,54}) << endl; // 1849648
     cout << rec_straight({8,2,6,8,9,8,1,4,1,5,3,0,7,7,0,4,2}) << endl; // 3414
     cout << endl;
-    cout << rec({3,1,5,8}) << endl;
-    cout << rec({1,5}) << endl;
-    cout << rec({35,16,83,87,84,59,48,41,20}) << endl;
-    cout << rec({35,16,83,87,84,59,48,41,20,54}) << endl;
-    cout << rec({8,2,6,8,9,8,1,4,1,5,3,0,7,7,0,4,2}) << endl;
+    cout << rec({3,1,5,8}) << endl; // 167
+    cout << rec({1,5}) << endl; // 10
+    cout << rec({35,16,83,87,84,59,48,41,20}) << endl; // 1611332
+    cout << rec({35,16,83,87,84,59,48,41,20,54}) << endl; // 1849648
+    cout << rec({8,2,6,8,9,8,1,4,1,5,3,0,7,7,0,4,2}) << endl; // 3414
     cout << endl;
-    cout << tab({3,1,5,8}) << endl;
-    cout << tab({1,5}) << endl;
-    cout << tab({35,16,83,87,84,59,48,41,20}) << endl;
-    cout << tab({35,16,83,87,84,59,48,41,20,54}) << endl;
-    cout << tab({8,2,6,8,9,8,1,4,1,5,3,0,7,7,0,4,2}) << endl;
+    cout << tab({3,1,5,8}) << endl; // 167
+    cout << tab({1,5}) << endl; // 10
+    cout << tab({35,16,83,87,84,59,48,41,20}) << endl; // 1611332
+    cout << tab({35,16,83,87,84,59,48,41,20,54}) << endl; // 1849648
+    cout << tab({8,2,6,8,9,8,1,4,1,5,3,0,7,7,0,4,2}) << endl; // 3414
+    cout << endl;
+    cout << tab2({3,1,5,8}) << endl; // 167
+    cout << tab2({1,5}) << endl; // 10
+    cout << tab2({35,16,83,87,84,59,48,41,20}) << endl; // 1611332
+    cout << tab2({35,16,83,87,84,59,48,41,20,54}) << endl; // 1849648
+    cout << tab2({8,2,6,8,9,8,1,4,1,5,3,0,7,7,0,4,2}) << endl; // 3414
 }
