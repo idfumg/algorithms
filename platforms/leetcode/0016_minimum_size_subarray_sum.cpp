@@ -1,7 +1,7 @@
 #include "../../template.hpp"
 
 int tab(const vi& arr, const int target) {
-    int n = arr.size();
+    const int n = arr.size();
     int window = 0;
     int left = 0;
     int right = 0;

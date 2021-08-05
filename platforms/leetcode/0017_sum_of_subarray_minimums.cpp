@@ -53,8 +53,9 @@ int tab2(const vi& arr) {
     return ans;
 }
 
-int tab3(const vi& arr) {
+uint64_t tab3(const vi& arr) {
     const int n = arr.size();
+
     deque<int> mq;
     vi left(n);
     for (int i = 0; i < n; ++i) {
@@ -66,17 +67,19 @@ int tab3(const vi& arr) {
         left[i] = count;
         mq.push_back(i);
     }
+
     mq.clear();
     vi right(n);
     for (int i = n - 1; i >= 0; --i) {
         int count = 1;
-        while (not mq.empty() and arr[i] <= arr[mq.back()]) {
+        while (not mq.empty() and arr[i] <= arr[mq.back()]) { // <= - dont repeat
             count += right[mq.back()];
             mq.pop_back();
         }
         right[i] = count;
         mq.push_back(i);
     }
+
     uint64_t ans = 0;
     for (int i = 0; i < n; ++i) {
         ans += static_cast<uint64_t>(left[i]) * right[i] * arr[i];

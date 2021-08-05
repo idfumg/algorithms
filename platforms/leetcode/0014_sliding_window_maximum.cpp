@@ -1,28 +1,24 @@
 #include "../../template.hpp"
 
-vi tab(const vi& arr, const uint64_t k) {
+vi tab(const vi& arr, const int k) {
     const int n = arr.size();
-    deque<vector<uint64_t>> mq; // 0 - index, 1 - count in monoqueue
-    for (uint64_t i = 0; i < k; ++i) {
-        uint64_t count = 1;
+    deque<vi> mq;
+    vi ans(n - k + 1);
+    for (int i = 0; i < n; ++i) {
+        if (i >= k) {
+            ans[i - k] = arr[mq.front()[0]];
+            if (--mq.front()[1] == 0) {
+                mq.pop_front();
+            }
+        }
+        int count = 1;
         while (not mq.empty() and arr[i] > arr[mq.back()[0]]) {
             count += mq.back()[1];
             mq.pop_back();
         }
         mq.push_back({i, count});
     }
-    vi ans = {arr[mq.front()[0]]};
-    for (uint64_t i = k; i < n; ++i) {
-        if (mq.front()[1] == 1) mq.pop_front();
-        else --mq.front()[1];
-        uint64_t count = 1;
-        while (not mq.empty() and arr[i] > arr[mq.back()[0]]) {
-            count += mq.back()[1];
-            mq.pop_back();
-        }
-        mq.push_back({i, count});
-        ans.push_back(arr[mq.front()[0]]);
-    }
+    ans[n - k] = arr[mq.front()[0]];
     return ans;
 }
 

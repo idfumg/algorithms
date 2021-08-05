@@ -1,28 +1,25 @@
 #include "../../template.hpp"
 
 int tab(const vi& arr) {
-    int n = arr.size();
+    const int n = arr.size();
+
     deque<int> mq;
     vi left(n, -1);
     for (int i = 0; i < n; ++i) {
-        while (not mq.empty() and arr[i] <= arr[mq.back()]) {
-            mq.pop_back();
-        }
-        if (mq.empty()) left[i] = -1;
-        else left[i] = mq.back();
+        while (not mq.empty() and arr[i] <= arr[mq.back()]) mq.pop_back();
+        if (not mq.empty()) left[i] = mq.back();
         mq.push_back(i);
     }
+
+    mq.clear();
     vi right(n, n);
     for (int i = n - 1; i >= 0; --i) {
-        while (not mq.empty() and arr[i] >= arr[mq.back()]) {
-            mq.pop_back();
-        }
-        if (mq.empty()) right[i] = n;
-        else right[i] = mq.back();
+        while (not mq.empty() and arr[i] >= arr[mq.back()]) mq.pop_back();
+        if (not mq.empty()) right[i] = mq.back();
         mq.push_back(i);
     }
-    int count = 1;
-    for (int i = 1; i < n; ++i) {
+
+    for (int i = 1; i < n - 1; ++i) {
         if (left[i] != -1 and right[i] != n) {
             return 1;
         }

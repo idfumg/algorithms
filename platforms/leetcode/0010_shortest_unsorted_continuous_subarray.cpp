@@ -1,27 +1,23 @@
 #include "../../template.hpp"
 
 int tab(const vi& arr) {
-    int n = arr.size();
+    const int n = arr.size();
 
     deque<int> mq;
-    vi right(n);
-    for (int i = n - 1; i >= 0; --i) {
-        while (not mq.empty() and arr[i] > arr[mq.back()]) {
-            mq.pop_back();
-        }
-        if (mq.empty()) right[i] = n;
-        else right[i] = mq.back();
+    vi left(n);
+    for (int i = 0; i < n; ++i) {
+        while (not mq.empty() and arr[i] < arr[mq.back()]) mq.pop_back();
+        if (mq.empty()) left[i] = -1;
+        else left[i] = mq.back();
         mq.push_back(i);
     }
 
-    vi left(n);
     mq.clear();
-    for (int i = 0; i < n; ++i) {
-        while (not mq.empty() and arr[i] < arr[mq.back()]) {
-            mq.pop_back();
-        }
-        if (mq.empty()) left[i] = -1;
-        else left[i] = mq.back();
+    vi right(n);
+    for (int i = n - 1; i >= 0; --i) {
+        while (not mq.empty() and arr[i] > arr[mq.back()]) mq.pop_back();
+        if (mq.empty()) right[i] = n;
+        else right[i] = mq.back();
         mq.push_back(i);
     }
 
@@ -33,7 +29,7 @@ int tab(const vi& arr) {
         }
     }
 
-    int high = -1;
+    int high = n;
     for (int i = n - 1; i >= 0; --i) {
         if (left[i] != i - 1 or right[i] != i + 1) {
             high = i;
@@ -41,17 +37,19 @@ int tab(const vi& arr) {
         }
     }
 
-    if (low == -1 or high == -1 or low >= high) return 0;
+    if (low >= high or (low == -1 and high == n)) {
+        return 0;
+    }
 
     int mini = INF;
     int maxi = -INF;
     for (int i = low; i <= high; ++i) {
-        mini = min(mini, arr[i]);
-        maxi = max(maxi, arr[i]);
+        if (arr[i] < mini) mini = arr[i];
+        if (arr[i] > maxi) maxi = arr[i];
     }
 
-    while (low - 1 >= 0 and arr[low - 1] > mini) --low;
-    while (high + 1 < n and arr[high + 1] < maxi) ++high;
+    while (low > 0 and arr[low - 1] > mini) --low;
+    while (high < n - 1 and arr[high + 1] < maxi) ++high;
 
     return high - low + 1;
 }

@@ -1,22 +1,21 @@
 #include "../../template.hpp"
 
 vi tab(const vi& a, const vi& b) {
-    int n = b.size();
-    unordered_map<int, int> next_greater;
+    const int m = a.size();
+    const int n = b.size();
+
     deque<int> mq;
+    unordered_map<int, int> idx;
     for (int i = n - 1; i >= 0; --i) {
-        while (not mq.empty() and b[i] >= b[mq.back()]) {
-            mq.pop_back();
-        }
-        if (mq.empty()) next_greater[b[i]] = -1;
-        else next_greater[b[i]] = b[mq.back()];
+        while (not mq.empty() and b[i] > b[mq.back()]) mq.pop_back();
+        if (mq.empty()) idx[b[i]] = -1;
+        else idx[b[i]] = b[mq.back()];
         mq.push_back(i);
     }
 
-    int m = a.size();
     vi ans(m);
     for (int i = 0; i < m; ++i) {
-        ans[i] = next_greater[a[i]];
+        ans[i] = idx[a[i]];
     }
     return ans;
 }

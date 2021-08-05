@@ -1,17 +1,15 @@
 #include "../../template.hpp"
 
-int tab(const vector<vector<char>>& matrix) {
-    int m = matrix.size();
-    if (m == 0) return 0;
-    int n = matrix[0].size();
-    if (n == 0) return 0;
+int tab(const vector<vector<char>>& arr) {
+    const int m = arr.size();
+    const int n = arr[0].size();
 
-    int ans = 0;
+    int ans = -INF;
+
     vi heights(n);
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
-            if (matrix[i][j] == '0') heights[j] = 0;
-            else ++heights[j];
+            heights[j] = (arr[i][j] == '0') ? 0 : (heights[j] + 1);
         }
 
         deque<int> mq;
@@ -36,14 +34,14 @@ int tab(const vector<vector<char>>& matrix) {
             mq.push_back(k);
         }
 
-        int current = 0;
         for (int k = 0; k < n; ++k) {
-            int width = right[k] - left[k] - 1;
-            int area = min(width, heights[k]) * min(width, heights[k]);
-            current = max(current, area);
+            const int width = right[k] - left[k] - 1;
+            const int height = heights[k];
+            const int area = min(width, height);
+            ans = max(ans, area * area);
         }
-        ans = max(ans, current);
     }
+
     return ans;
 }
 

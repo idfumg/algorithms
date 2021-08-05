@@ -3,8 +3,10 @@
 int rec(const int n, const int k) {
     if (n < 0) return INF;
     if (n == 0) return 0;
-    if (k > 0) return min(rec(n / 10, k) * 10 + (n % 10), rec(n / 10, k - 1));
-    return rec(n / 10, 0) * 10 + n % 10;
+    if (k > 0) return min(
+        rec(n / 10, k) * 10 + (n % 10),
+        rec(n / 10, k - 1));
+    return rec(n / 10, 0) * 10 + (n % 10);
 }
 
 string rec(const string& s, const int k) {
@@ -13,13 +15,13 @@ string rec(const string& s, const int k) {
 }
 
 string tab(const string& s, const int K) {
-    if (s.empty()) return "";
     const int n = stoi(s);
     vvi dp(n + 1, vi(K + 1));
-    for (int i = 0; i <= n; ++i) {
+    for (int i = 1; i <= n; ++i) {
         for (int k = 0; k <= K; ++k) {
-            if (i == 0) dp[i][k] = 0;
-            else if (k > 0) dp[i][k] = min(dp[i / 10][k] * 10 + (i % 10), dp[i / 10][k - 1]);
+            if (k > 0) dp[i][k] = min(
+                dp[i / 10][k] * 10 + (i % 10),
+                dp[i / 10][k - 1]);
             else dp[i][k] = dp[i / 10][0] * 10 + (i % 10);
         }
     }
@@ -36,16 +38,15 @@ string tab2(const string& s, int k) {
         }
         mq.push_back(i);
     }
-    while (mq.size() > 1 and s[mq.front()] == '0') {
+    while (not mq.empty() and mq.front() == '0') {
         mq.pop_front();
     }
     while (not mq.empty() and k > 0) {
         mq.pop_back();
-        --k;
     }
     string ans;
     for (int i = 0; i < mq.size(); ++i) {
-        ans.push_back(s[mq[i]]);
+        ans += s[mq[i]];
     }
     return ans.empty() ? "0" : ans;
 }

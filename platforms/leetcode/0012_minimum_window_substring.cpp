@@ -1,28 +1,30 @@
 #include "../../template.hpp"
 
 string tab(const string& a, const string& b) {
+    const int n = a.size();
+
     unordered_map<char, int> pattern;
     for (const char ch : b) {
         ++pattern[ch];
     }
 
-    const int n = a.size();
-    const int need = pattern.size();
     unordered_map<char, int> window;
-    int current = 0;
-    int window_size = 0;
     int window_min_size = INF;
-    int position = 0;
+    int window_min_idx = 0;
+    int window_size = 0;
+    int expected = pattern.size();
+    int current = 0;
     for (int i = 0; i < n; ++i) {
-        ++window[a[i]];
+        const char current_ch = a[i];
+        ++window[current_ch];
         ++window_size;
-        if (window[a[i]] == pattern[a[i]]) {
+        if (window[current_ch] == pattern[current_ch]) {
             ++current;
         }
-        while (current == need) { // try to impair our window
-            if (window_min_size > window_size) {
+        while (current == expected) {
+            if (window_size < window_min_size) {
                 window_min_size = window_size;
-                position = i;
+                window_min_idx = i - window_size + 1;
             }
             const char ch = a[i - window_size + 1];
             --window[ch];
@@ -32,8 +34,7 @@ string tab(const string& a, const string& b) {
             }
         }
     }
-    if (window_min_size == INF) return "";
-    return a.substr(position - window_min_size + 1, window_min_size);
+    return window_min_size == INF ? "" : a.substr(window_min_idx, window_min_size);
 }
 
 int main() { TimeMeasure _; __x();
