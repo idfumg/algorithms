@@ -5,12 +5,13 @@
 using namespace std;
 
 #define endl '\n'
-#define MOD static_cast<int64_t>(1e9 + 7)
-#define PI (3.1415926535897932384626433832795)
-#define LLINF static_cast<int64_t>(1e18)
-#define EPS (1e-9)
 
-#define INF static_cast<int32_t>(1e9)
+constexpr double PI = 3.1415926535897932384626433832795;
+constexpr double EPS = 0.0000000001;
+constexpr long long INFLL = 1000000000000000000 + 7;
+constexpr int INF = 1000000000 + 7;
+constexpr int MOD = 1000000000 + 7;
+
 using vi = vector<int>;
 using vvi = vector<vi>;
 using vvvi = vector<vvi>;
