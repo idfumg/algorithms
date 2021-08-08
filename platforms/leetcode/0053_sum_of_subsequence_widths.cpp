@@ -42,7 +42,7 @@ int tab(vi arr) {
 int tab2(vi arr) {
     const int n = arr.size();
     sort(arr.begin(), arr.end());
-    vll pow2(n + 1);
+    array<ll, 100001> pow2{};
     pow2[0] = 1;
     for (int i = 1; i <= n; ++i) {
         pow2[i] = 2 * pow2[i - 1];
