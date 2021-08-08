@@ -21,22 +21,24 @@ int tab(const string& s) {
 
 int tab2(const string& s) {
     const int n = s.size();
-    array<int, 27> prev;
-    for (int i = 0; i < 27; ++i) {
-        prev[i] = INF;
-    }
-    vi left(n, 0), right(n, n);
+
+    array<int, 27> prev{};
+    for (int i = 0; i < 27; ++i) prev[i] = -1;
+
+    vi left(n, -1);
+    vi right(n, n);
     for (int i = 0; i < n; ++i) {
-        const int ch = s[i] - 'A';
-        if (prev[ch] != INF) {
-            left[i] = prev[ch] + 1;
+        const char ch = s[i] - 'A';
+        if (prev[ch] != -1) {
+            left[i] = prev[ch];
             right[prev[ch]] = i;
         }
         prev[ch] = i;
     }
+
     int ans = 0;
     for (int i = 0; i < n; ++i) {
-        ans += (i + 1 - left[i]) * (right[i] - i);
+        ans += (i - left[i]) * (right[i] - i);
     }
     return ans % MOD;
 }
