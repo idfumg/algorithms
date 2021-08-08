@@ -3,22 +3,26 @@
 vi tab(const vi& arr, const int k) {
     const int n = arr.size();
     deque<vi> mq;
+    int window_size = 0;
     vi ans(n - k + 1);
     for (int i = 0; i < n; ++i) {
-        if (i >= k) {
-            ans[i - k] = arr[mq.front()[0]];
-            if (--mq.front()[1] == 0) {
-                mq.pop_front();
-            }
-        }
         int count = 1;
         while (not mq.empty() and arr[i] > arr[mq.back()[0]]) {
             count += mq.back()[1];
             mq.pop_back();
         }
         mq.push_back({i, count});
+        ++window_size;
+
+        if (window_size == k) {
+            ans[i - window_size + 1] = arr[mq.front()[0]];
+            --mq.front()[1];
+            --window_size;
+            if (mq.front()[1] == 0) {
+                mq.pop_front();
+            }
+        }
     }
-    ans[n - k] = arr[mq.front()[0]];
     return ans;
 }
 
