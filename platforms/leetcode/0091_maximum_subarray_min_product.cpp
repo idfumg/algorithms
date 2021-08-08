@@ -28,12 +28,10 @@ int tab(const vi& arr) {
 
     uint64_t ans = 0;
     for (int i = 0; i < n; ++i) {
-        const int l = left[i] == -1 ? 0 : left[i] + 1;
-        const int r = right[i] == n ? n : right[i];
-        const uint64_t cost = prefix[r] - prefix[l];
-        ans = max(ans, cost * arr[i]);
+        const ll cost = prefix[right[i]] - prefix[left[i] + 1];
+        ans = max(ans, (uint64_t)cost * arr[i]);
     }
-    const int M = 1e9 + 7;
+    constexpr int M = 1e9 + 7;
     return ans % M;
 }
 
