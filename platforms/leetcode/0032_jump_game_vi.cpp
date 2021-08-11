@@ -44,13 +44,15 @@ int tab(const vi& arr, const int k) {
 
 int tab2(const vi& arr, const int k) {
     const int n = arr.size();
-    vi dp(n + 1, -INF);
-    multiset<int> s{dp[1] = arr[0]};
-    for (int i = 2; i <= n; ++i) {
-        if (i > k + 1) s.erase(s.find(dp[i - k - 1]));
-        s.insert(dp[i] = *rbegin(s) + arr[i - 1]);
+    vi dp(n, -INF);
+    dp[0] = arr[0];
+    multiset<int> window = {arr[0]};
+    for (int i = 1; i < n; ++i) {
+        if (i - k - 1 >= 0) window.erase(window.find(dp[i - k - 1]));
+        if (not window.empty()) dp[i] = *window.crbegin() + arr[i];
+        window.insert(dp[i]);
     }
-    return dp[n];
+    return dp[n - 1];
 }
 
 int main() { TimeMeasure _; __x();
