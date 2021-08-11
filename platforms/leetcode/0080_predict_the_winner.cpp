@@ -65,29 +65,14 @@ int tab(const vi& arr) {
 
 int tab2(const vi& arr) {
     const int n = arr.size();
-    int idx = 0;
-    vvvi dp(2, vvi(n + 1, vi(2)));
+    vvi dp(n + 2, vi(n + 1));
     for (int i = n; i >= 1; --i) {
-        idx = i & 1;
         for (int j = 1; j <= n; ++j) {
-            for (int p : {1, 0}) {
-                if (i > j) {
-                    dp[idx][j][p] = 0;
-                }
-                else if (p == 0) {
-                    dp[idx][j][p] = max(
-                        dp[1 - idx][j][1 - p]+arr[i - 1],
-                        dp[idx][j - 1][1 - p]+arr[j - 1]);
-                }
-                else {
-                    dp[idx][j][p] = min(
-                        dp[1 - idx][j][1 - p]-arr[i - 1],
-                        dp[idx][j - 1][1 - p]-arr[j - 1]);
-                }
-            }
+            if (i > j) dp[i][j] = 0;
+            else dp[i][j] = max(arr[i - 1] - dp[i + 1][j], arr[j - 1] - dp[i][j - 1]);
         }
     }
-    return dp[idx][n][0] >= 0;
+    return dp[1][n] >= 0;
 }
 
 int main() { TimeMeasure _; __x();
