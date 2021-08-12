@@ -1,7 +1,6 @@
 #include "../../template.hpp"
 
 int rec(const int n, const int k) {
-    if (n < 0) return INF;
     if (n == 0) return 0;
     if (k > 0) return min(
         rec(n / 10, k) * 10 + (n % 10),
@@ -10,40 +9,21 @@ int rec(const int n, const int k) {
 }
 
 string rec(const string& s, const int k) {
-    const int ans = rec(stoi(s), k);
-    return to_string(ans);
-}
-
-string tab(const string& s, const int K) {
     const int n = stoi(s);
-    vvi dp(n + 1, vi(K + 1));
-    for (int i = 1; i <= n; ++i) {
-        for (int k = 0; k <= K; ++k) {
-            if (k > 0) dp[i][k] = min(
-                dp[i / 10][k] * 10 + (i % 10),
-                dp[i / 10][k - 1]);
-            else dp[i][k] = dp[i / 10][0] * 10 + (i % 10);
-        }
-    }
-    return to_string(dp[n][K]);
+    const int res = rec(n, k);
+    const string ans = to_string(res);
+    return ans;
 }
 
-string tab2(const string& s, int k) {
+string tab(const string& s, int k) {
     const int n = s.size();
     deque<int> mq;
     for (int i = 0; i < n; ++i) {
-        while (not mq.empty() and s[i] < s[mq.back()] and k > 0) {
-            mq.pop_back();
-            --k;
-        }
+        while (not mq.empty() and s[i] < s[mq.back()] and k-- > 0) mq.pop_back();
         mq.push_back(i);
     }
-    while (not mq.empty() and mq.front() == '0') {
-        mq.pop_front();
-    }
-    while (not mq.empty() and k > 0) {
-        mq.pop_back();
-    }
+    while (not mq.empty() and s[mq.front()] == '0') mq.pop_front();
+    while (not mq.empty() and k-- > 0) mq.pop_back();
     string ans;
     for (int i = 0; i < mq.size(); ++i) {
         ans += s[mq[i]];
@@ -57,19 +37,12 @@ int main() { TimeMeasure _; __x();
     cout << rec("10", 2) << endl; // 0
     cout << rec("9", 1) << endl; // 0
     cout << rec("91", 1) << endl; // 1
-    cout << rec("19", 1) << endl; // 9
+    cout << rec("19", 1) << endl; // 1
     cout << endl;
     cout << tab("1432219", 3) << endl; // 1219
     cout << tab("10200", 3) << endl; // 0
     cout << tab("10", 2) << endl; // 0
     cout << tab("9", 1) << endl; // 0
     cout << tab("91", 1) << endl; // 1
-    cout << tab("19", 1) << endl; // 9
-    cout << endl;
-    cout << tab2("1432219", 3) << endl; // 1219
-    cout << tab2("10200", 3) << endl; // 0
-    cout << tab2("10", 2) << endl; // 0
-    cout << tab2("9", 1) << endl; // 0
-    cout << tab2("91", 1) << endl; // 1
-    cout << tab2("19", 1) << endl; // 9
+    cout << tab("19", 1) << endl; // 1
 }
