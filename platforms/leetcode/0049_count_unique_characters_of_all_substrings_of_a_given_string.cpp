@@ -19,28 +19,27 @@ int tab(const string& s) {
     return ans % MOD;
 }
 
-int tab2(const string& s) {
+int tab(const string& s) {
     const int n = s.size();
-
-    array<int, 27> prev{};
-    for (int i = 0; i < 27; ++i) prev[i] = -1;
-
-    vi left(n, -1);
-    vi right(n, n);
+    array<int, 32> prev{};
+    for (int i = 0; i < prev.size(); ++i) {
+        prev[i] = -1;
+    }
+    vi left(n, 0);
+    vi right(n, n - 1);
     for (int i = 0; i < n; ++i) {
         const char ch = s[i] - 'A';
         if (prev[ch] != -1) {
-            left[i] = prev[ch];
-            right[prev[ch]] = i;
+            left[i] = prev[ch] + 1;
+            right[prev[ch]] = i - 1;
         }
         prev[ch] = i;
     }
-
     int ans = 0;
     for (int i = 0; i < n; ++i) {
-        ans += (i - left[i]) * (right[i] - i);
+        ans += (i - left[i] + 1) * (right[i] - i + 1);
     }
-    return ans % MOD;
+    return ans;
 }
 
 int tab3(const string& s) {
