@@ -325,12 +325,16 @@ set<T> operator+(const set<T>& a, int value) {
     return ans;
 }
 
-struct Node { int value = INF; Node* left = nullptr; Node* right = nullptr; vector<Node*> children = {}; Node(const int value) : value(value), left(nullptr), right(nullptr) {} Node(const int value, Node* left, Node* right) : value(value), left(left), right(right) {}};
+struct Node { int value = INF; int val = INF; Node* left = nullptr; Node* right = nullptr; Node* next = nullptr; vector<Node*> children = {}; Node(const int value) : value(value), val(value), left(nullptr), right(nullptr), next(nullptr) {} Node(const int value, Node* left, Node* right) : value(value), left(left), right(right), next(right) {}};
+using TreeNode = Node;
+using ListNode = Node;
 void print_inorder(Node* root) { if (not root) return; print_inorder(root->left); cout << root->value << ' '; print_inorder(root->right); }
 void print_preorder(Node* root) { if (not root) return; cout << root->value << ' '; print_preorder(root->left); print_preorder(root->right); }
 void print_postorder(Node* root) { if (not root) return; print_postorder(root->left); print_postorder(root->right); cout << root->value << ' '; }
-Node* make_list(vi arr) { Node* head = nullptr; Node* current = nullptr; for (int value : arr) { if (head == nullptr) { current = head = new Node(value); } else { current->right = new Node(value); current = current->right; } } return head; }
+TreeNode* TreeFromLevelOrder(const vi& arr) {    if (arr.empty()) return nullptr;    TreeNode* root = new TreeNode(arr[0]);    deque<TreeNode*> q;    q.push_back(root);    int idx = 1;    int n = arr.size();    while (not q.empty()) {        TreeNode* at = q.front(); q.pop_front();        if (idx < n) {            at->left = (arr[idx] == -INF) ? nullptr : (new TreeNode(arr[idx])); ++idx;            if (at->left) q.push_back(at->left);        }        if (idx < n) {            at->right = (arr[idx] == -INF) ? nullptr : (new TreeNode(arr[idx])); ++idx;            if (at->right) q.push_back(at->right);        }    }    return root; }
+Node* make_list(const vi& arr) { Node* head = nullptr; Node* current = nullptr; for (int value : arr) { if (head == nullptr) { current = head = new Node(value); } else { current->right = current->next = new Node(value); current = current->right; } } return head; }
 void print_list(Node* head) { for (Node* curr = head; curr; curr = curr->right) cout << curr->value << ' '; cout << endl; }
+void print_list2(Node* head) { for (Node* curr = head; curr; curr = curr->next) cout << curr->value << ' '; cout << endl; }
 
 #define trace() cout << "Line: " << __LINE__ << endl;
 
