@@ -19,6 +19,10 @@ using vvvvi = vector<vvvi>;
 using vb = vector<bool>;
 using vvb = vector<vb>;
 using vvvb = vector<vvb>;
+using vc = vector<char>;
+using vvc = vector<vc>;
+using vs = vector<string>;
+using vvs = vector<vs>;
 
 using ld = long double;
 using ll = int64_t;
