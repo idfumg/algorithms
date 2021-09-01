@@ -10,6 +10,7 @@ constexpr double PI = 3.1415926535897932384626433832795;
 constexpr double EPS = 0.0000000001;
 constexpr long long INFLL = 1000000000000000000 + 7;
 constexpr int INF = 1000000000 + 7;
+constexpr int null = -INF;
 constexpr int MOD = 1000000000 + 7;
 
 using vi = vector<int>;
