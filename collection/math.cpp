@@ -20,7 +20,7 @@ bool is_prime(const T n) { // O(sqrt(n))
 template<class T>
 vector<T> sieve_primes(const T a, const T b) { // O(logn)
     if (b < 2) return {};
-    vector<bool> is_prime(b + 3);
+    vector<bool> is_prime(b + 1);
     is_prime[2] = true;
     for (T p = 3; p <= b; p += 2) {
         is_prime[p] = true;
