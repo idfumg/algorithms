@@ -46,7 +46,7 @@ vector<T> sieve_primes(const T a, const T b) { // O(logn)
 template<class T>
 vector<T> segmented_sieve_primes(const T a, const T b) { // O(logn)
     if (b < 2) return {};
-    vector<bool> is_prime(static_cast<T>(sqrt(b)) + 3, false); // [0..sqrt(b)]
+    vector<bool> is_prime(static_cast<T>(sqrt(b)) + 1, false); // [0..sqrt(b)]
     is_prime[2] = true;
     for (T p = 3; p * p <= b; p += 2) {
         is_prime[p] = true;
