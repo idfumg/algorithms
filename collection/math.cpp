@@ -303,7 +303,11 @@ int main() {
     cout << gcd(140, 12) << endl; // 4
     cout << gcd(12, 20) << endl; // 4
     cout << gcd(18, 68) << endl; // 2
+    cout << endl;
+
+    cout << "gcd_rec:" << endl;
     cout << gcd_rec(140, 12) << endl; // 4
     cout << gcd_rec(12, 20) << endl; // 4
     cout << gcd_rec(18, 68) << endl; // 2
+    cout << endl;
 }
