@@ -21,7 +21,7 @@ vector<int> sieve_primes(int a, int b) { // O(logn)
     is_prime[0] = is_prime[1] = false;
     for (int p = 2; p * p <= b; ++p) {
         if (is_prime[p]) {
-            for (int i = p + p; i <= b; i += p) { // mark all multiples
+            for (int i = p * p; i <= b; i += p) { // mark all multiples
                 is_prime[i] = false;
             }
         }
