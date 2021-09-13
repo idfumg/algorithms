@@ -5,7 +5,7 @@
 using namespace std;
 
 template<class T>
-bool is_prime(T n) { // O(sqrt(n))
+bool is_prime(const T n) { // O(sqrt(n))
     if (n <= 1) return false;
     if (n == 2) return true;
     if (n % 2 == 0) return false; // check if it's an even number
@@ -18,7 +18,7 @@ bool is_prime(T n) { // O(sqrt(n))
 }
 
 template<class T>
-vector<T> sieve_primes(T a, T b) { // O(logn)
+vector<T> sieve_primes(const T a, const T b) { // O(logn)
     if (b < 2) return {};
     vector<bool> is_prime(b + 3);
     is_prime[2] = true;
@@ -44,7 +44,7 @@ vector<T> sieve_primes(T a, T b) { // O(logn)
 }
 
 template<class T>
-vector<T> segmented_sieve_primes(T a, T b) { // O(logn)
+vector<T> segmented_sieve_primes(const T a, const T b) { // O(logn)
     if (b < 2) return {};
     vector<bool> is_prime(static_cast<T>(sqrt(b)) + 3, false); // [0..sqrt(b)]
     is_prime[2] = true;
@@ -165,7 +165,7 @@ T power(T base, T p) { // O(logn) // binary exponentiation
 }
 
 template<class T>
-T power_mod(T base, T p, T mod) { // O(logn)
+T power_mod(T base, T p, const T mod) { // O(logn)
     T res = 1;
     while (p > 0) {
         if (p & 1) res *= base, res %= mod, --p;
