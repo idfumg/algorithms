@@ -17,8 +17,8 @@ int is_prime(int n) { // O(sqrt(n))
 }
 
 vector<int> sieve_primes(int a, int b) { // O(logn)
+    if (b < 2) return {};
     vector<bool> is_prime(b + 3);
-    is_prime[0] = is_prime[1] = false;
     is_prime[2] = true;
     for (int p = 3; p <= b; p += 2) {
         is_prime[p] = true;
@@ -30,10 +30,47 @@ vector<int> sieve_primes(int a, int b) { // O(logn)
             }
         }
     }
+
     vector<int> primes;
-    if (b >= 2) primes.push_back(2);
+    if (a <= 2) primes.push_back(2);
     for (int i = 3; i <= b; i += 2) {
         if (i >= a and is_prime[i]) {
+            primes.push_back(i);
+        }
+    }
+    return primes;
+}
+
+vector<int> segmented_sieve_primes(int a, int b) { // O(logn)
+    if (b < 2) return {};
+    vector<bool> is_prime(static_cast<int>(sqrt(b)) + 3, false); // [0..sqrt(b)]
+    is_prime[2] = true;
+    for (int p = 3; p * p <= b; p += 2) {
+        is_prime[p] = true;
+    }
+    for (int p = 3; p * p <= b; p += 2) {
+        if (is_prime[p]) {
+            for (int i = p * p; i * i <= b; i += 2 * p) { // mark multiples
+                is_prime[i] = false;
+            }
+        }
+    }
+
+    vector<bool> is_segmented_prime(b - a + 1, true); // skip [0..a)
+    for (int i = 2; i * i <= b; ++i) {
+        for (int p = a; p <= b; ++p) {
+            if (is_prime[i]) {
+                if (i == p) continue;
+                if (p % i == 0) {
+                    is_segmented_prime[p - a] = false;
+                }
+            }
+        }
+    }
+
+    vector<int> primes;
+    for (int i = max(2, a); i <= b; ++i) {
+        if (is_segmented_prime[i - a]) {
             primes.push_back(i);
         }
     }
@@ -171,6 +208,15 @@ int gcd(int a, int b) {
     return gcd(b, a % b);
 }
 
+int gcd_iter(int a, int b) {
+    while (b != 0) {
+        int temp = a;
+        a = b;
+        b = temp % b;
+    }
+    return a;
+}
+
 template<class T>
 std::ostream& operator << (std::ostream& os, const std::vector<T>& v) noexcept {
     for (const auto& value : v) os << value << ' ';
@@ -193,6 +239,14 @@ int main() {
 
     cout << "sieve_primes:" << endl;
     cout << sieve_primes(0, 11) << endl; // 2 3 5 7 11
+    cout << sieve_primes(5, 11) << endl; // 2 3 5 7 11
+    cout << sieve_primes(11, 26) << endl; // 11 13 17 19 23
+    cout << endl;
+
+    cout << "segmented_sieve_primes:" << endl;
+    cout << segmented_sieve_primes(0, 11) << endl; // 2 3 5 7 11
+    cout << segmented_sieve_primes(5, 11) << endl; // 5 7 11
+    cout << segmented_sieve_primes(11, 26) << endl; // 11 13 17 19 23
     cout << endl;
 
     cout << "prime_factorization:" << endl;
@@ -232,4 +286,9 @@ int main() {
 
     cout << "gcd:" << endl;
     cout << gcd(140, 12) << endl; // 4
+    cout << gcd(12, 20) << endl; // 4
+    cout << gcd(18, 68) << endl; // 2
+    cout << gcd_iter(140, 12) << endl; // 4
+    cout << gcd_iter(12, 20) << endl; // 4
+    cout << gcd_iter(18, 68) << endl; // 2
 }
