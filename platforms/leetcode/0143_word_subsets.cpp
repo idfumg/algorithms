@@ -1,35 +1,29 @@
 #include "../../template.hpp"
 
-vector<string> sol(const vector<string>& words1, const vector<string>& words2) {
-    vector<string> ans;
+vs sol(const vs& words1, const vs& words2) {
     array<int, 32> pattern{};
     for (const auto& word : words2) {
-        array<int, 32> temp{};
+        array<int, 32> temp_pattern{};
         for (const char ch : word) {
-            ++temp[ch - 'a'];
+            ++temp_pattern[ch - 'a'];
         }
         for (int i = 0; i < 32; ++i) {
-            pattern[i] = max(pattern[i], temp[i]);
+            pattern[i] = max(pattern[i], temp_pattern[i]);
         }
     }
-    int required = 0;
-    for (int i = 0; i < 32; ++i) {
-        if (pattern[i] > 0) {
-            ++required;
-        }
-    }
-    for (const string& word : words1) {
-        array<int, 32> temp{};
+    vs ans;
+    for (const auto& word : words1) {
+        array<int, 32> current{};
         for (const char ch : word) {
-            ++temp[ch - 'a'];
+            ++current[ch - 'a'];
         }
-        int current = 0;
+        bool is_valid = true;
         for (int i = 0; i < 32; ++i) {
-            if (temp[i] >= pattern[i] and pattern[i] > 0) {
-                ++current;
+            if (current[i] < pattern[i]) {
+                is_valid = false;
             }
         }
-        if (current == required) {
+        if (is_valid) {
             ans.push_back(word);
         }
     }
