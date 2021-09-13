@@ -4,36 +4,38 @@
 
 using namespace std;
 
-int is_prime(int n) { // O(sqrt(n))
-    if (n <= 1) return 0;
-    if (n == 2) return 1;
-    if (n % 2 == 0) return 0; // check if it's an even number
-    for (int i = 3; i * i <= n; i += 2) { // check only odd numbers
+template<class T>
+bool is_prime(T n) { // O(sqrt(n))
+    if (n <= 1) return false;
+    if (n == 2) return true;
+    if (n % 2 == 0) return false; // check if it's an even number
+    for (T i = 3; i * i <= n; i += 2) { // check only odd numbers
         if (n % i == 0) {
-            return 0;
+            return false;
         }
     }
-    return 1;
+    return true;
 }
 
-vector<int> sieve_primes(int a, int b) { // O(logn)
+template<class T>
+vector<T> sieve_primes(T a, T b) { // O(logn)
     if (b < 2) return {};
     vector<bool> is_prime(b + 3);
     is_prime[2] = true;
-    for (int p = 3; p <= b; p += 2) {
+    for (T p = 3; p <= b; p += 2) {
         is_prime[p] = true;
     }
-    for (int p = 3; p * p <= b; p += 2) {
+    for (T p = 3; p * p <= b; p += 2) {
         if (is_prime[p]) {
-            for (int i = p * p; i <= b; i += 2 * p) { // mark multiples
+            for (T i = p * p; i <= b; i += 2 * p) { // mark multiples
                 is_prime[i] = false;
             }
         }
     }
 
-    vector<int> primes;
+    vector<T> primes;
     if (a <= 2) primes.push_back(2);
-    for (int i = 3; i <= b; i += 2) {
+    for (T i = 3; i <= b; i += 2) {
         if (i >= a and is_prime[i]) {
             primes.push_back(i);
         }
@@ -41,24 +43,25 @@ vector<int> sieve_primes(int a, int b) { // O(logn)
     return primes;
 }
 
-vector<int> segmented_sieve_primes(int a, int b) { // O(logn)
+template<class T>
+vector<T> segmented_sieve_primes(T a, T b) { // O(logn)
     if (b < 2) return {};
-    vector<bool> is_prime(static_cast<int>(sqrt(b)) + 3, false); // [0..sqrt(b)]
+    vector<bool> is_prime(static_cast<T>(sqrt(b)) + 3, false); // [0..sqrt(b)]
     is_prime[2] = true;
-    for (int p = 3; p * p <= b; p += 2) {
+    for (T p = 3; p * p <= b; p += 2) {
         is_prime[p] = true;
     }
-    for (int p = 3; p * p <= b; p += 2) {
+    for (T p = 3; p * p <= b; p += 2) {
         if (is_prime[p]) {
-            for (int i = p * p; i * i <= b; i += 2 * p) { // mark multiples
+            for (T i = p * p; i * i <= b; i += 2 * p) { // mark multiples
                 is_prime[i] = false;
             }
         }
     }
 
     vector<bool> is_segmented_prime(b - a + 1, true); // skip [0..a)
-    for (int i = 2; i * i <= b; ++i) {
-        for (int p = a; p <= b; ++p) {
+    for (T i = 2; i * i <= b; ++i) {
+        for (T p = a; p <= b; ++p) {
             if (is_prime[i]) {
                 if (i == p) continue;
                 if (p % i == 0) {
@@ -68,8 +71,8 @@ vector<int> segmented_sieve_primes(int a, int b) { // O(logn)
         }
     }
 
-    vector<int> primes;
-    for (int i = max(2, a); i <= b; ++i) {
+    vector<T> primes;
+    for (T i = max(2, a); i <= b; ++i) {
         if (is_segmented_prime[i - a]) {
             primes.push_back(i);
         }
@@ -77,11 +80,12 @@ vector<int> segmented_sieve_primes(int a, int b) { // O(logn)
     return primes;
 }
 
-unordered_map<int, int> prime_factorization(int n) { // O(sqrt(n))
-    unordered_map<int, int> primes;
-    for (int i = 2; i * i <= n; ++i) {
+template<class T>
+unordered_map<T, T> prime_factorization(T n) { // O(sqrt(n))
+    unordered_map<T, T> primes;
+    for (T i = 2; i * i <= n; ++i) {
         if (n % i == 0) {
-            int count = 0;
+            T count = 0;
             while (n % i == 0) {
                 ++count;
                 n /= i;
@@ -93,9 +97,10 @@ unordered_map<int, int> prime_factorization(int n) { // O(sqrt(n))
     return primes;
 }
 
-vector<int> prime_factorization_unique(int n) { // O(sqrt(n))
-    vector<int> primes;
-    for (int i = 2; i * i <= n; ++i) {
+template<class T>
+vector<T> prime_factorization_unique(T n) { // O(sqrt(n))
+    vector<T> primes;
+    for (T i = 2; i * i <= n; ++i) {
         if (n % i == 0) {
             while (n % i == 0) {
                 n /= i;
@@ -107,18 +112,19 @@ vector<int> prime_factorization_unique(int n) { // O(sqrt(n))
     return primes;
 }
 
-unordered_map<int, int> prime_factorization_sieve(int n) { // O(logn)
-    vector<int> is_prime(n + 1, -1);
-    for (int p = 2; p * p <= n; ++p) {
+template<class T>
+unordered_map<T, T> prime_factorization_sieve(T n) { // O(logn)
+    vector<T> is_prime(n + 1, -1);
+    for (T p = 2; p * p <= n; ++p) {
         if (is_prime[p] == -1) {
-            for (int i = p * p; i <= n; i += p) {
+            for (T i = p * p; i <= n; i += p) {
                 if (is_prime[i] == -1) { // it's not a prime num
                     is_prime[i] = p; // it can be divided on the prime num `p`
                 }
             }
         }
     }
-    unordered_map<int, int> primes;
+    unordered_map<T, T> primes;
     for (; is_prime[n] != -1; n /= is_prime[n]) { // remove every prime num
         ++primes[is_prime[n]];
     }
@@ -126,18 +132,19 @@ unordered_map<int, int> prime_factorization_sieve(int n) { // O(logn)
     return primes;
 }
 
-vector<int> prime_factorization_sieve_unique(int n) { // O(logn)
-    vector<int> is_prime(n + 1, -1);
-    for (int p = 2; p * p <= n; ++p) {
+template<class T>
+vector<T> prime_factorization_sieve_unique(T n) { // O(logn)
+    vector<T> is_prime(n + 1, -1);
+    for (T p = 2; p * p <= n; ++p) {
         if (is_prime[p] == -1) {
-            for (int i = p * p; i <= n; i += p) {
+            for (T i = p * p; i <= n; i += p) {
                 if (is_prime[i] == -1) { // it's not a prime num
                     is_prime[i] = p; // it can be divided on the prime num `p`
                 }
             }
         }
     }
-    vector<int> primes;
+    vector<T> primes;
     for (; is_prime[n] != -1; n /= is_prime[n]) {
         if (primes.empty() or primes.back() != is_prime[n]) {
             primes.push_back(is_prime[n]);
@@ -147,8 +154,9 @@ vector<int> prime_factorization_sieve_unique(int n) { // O(logn)
     return primes;
 }
 
-int power(int base, int p) { // O(logn) // binary exponentiation
-    int res = 1;
+template<class T>
+T power(T base, T p) { // O(logn) // binary exponentiation
+    T res = 1;
     while (p > 0) {
         if (p & 1) res *= base, --p;
         else base *= base, p /= 2;
@@ -156,8 +164,9 @@ int power(int base, int p) { // O(logn) // binary exponentiation
     return res;
 }
 
-int power_mod(int base, int p, int mod) { // O(logn)
-    int res = 1;
+template<class T>
+T power_mod(T base, T p, T mod) { // O(logn)
+    T res = 1;
     while (p > 0) {
         if (p & 1) res *= base, res %= mod, --p;
         else base *= base, base %= mod, p /= 2;
@@ -165,12 +174,13 @@ int power_mod(int base, int p, int mod) { // O(logn)
     return res;
 }
 
-vector<vector<int>> mul_matrix(const vector<vector<int>>& A, const vector<vector<int>>& B) {
-    const int n = A.size();
-    vector<vector<int>> C(n, vector<int>(n));
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            for (int k = 0; k < n; ++k) {
+template<class T>
+vector<vector<T>> mul_matrix(const vector<vector<T>>& A, const vector<vector<T>>& B) {
+    const T n = A.size();
+    vector<vector<T>> C(n, vector<T>(n));
+    for (T i = 0; i < n; ++i) {
+        for (T j = 0; j < n; ++j) {
+            for (T k = 0; k < n; ++k) {
                 C[i][j] += A[i][k] * B[k][j];
             }
         }
@@ -178,10 +188,11 @@ vector<vector<int>> mul_matrix(const vector<vector<int>>& A, const vector<vector
     return C;
 }
 
-vector<vector<int>> power_matrix(vector<vector<int>> A, int p) {
-    const int n = A.size();
-    vector<vector<int>> I(n, vector<int>(n));
-    for (int i = 0; i < n; ++i) {
+template<class T>
+vector<vector<T>> power_matrix(vector<vector<T>> A, T p) {
+    const T n = A.size();
+    vector<vector<T>> I(n, vector<T>(n));
+    for (T i = 0; i < n; ++i) {
         I[i][i] = 1;
     }
     while (p > 0) {
@@ -191,30 +202,34 @@ vector<vector<int>> power_matrix(vector<vector<int>> A, int p) {
     return I;
 }
 
-int64_t add_mod(int64_t a, int64_t b, int64_t mod = 1e9 + 7) {
+template<class T>
+T add_mod(T a, T b, T mod = 1e9 + 7) {
     return (a % mod + b % mod) % mod;
 }
 
-int64_t sub_mod(int64_t a, int64_t b, int64_t mod = 1e9 + 7) {
+template<class T>
+T sub_mod(T a, T b, T mod = 1e9 + 7) {
     return (a % mod - b % mod + mod) % mod;
 }
 
-int64_t mul_mod(int64_t a, int64_t b, int64_t mod = 1e9 + 7) {
+template<class T>
+T mul_mod(T a, T b, T mod = 1e9 + 7) {
     return ((a % mod) * (b % mod)) % mod;
 }
 
-int gcd(int a, int b) {
-    if (b == 0) return a;
-    return gcd(b, a % b);
-}
-
-int gcd_iter(int a, int b) {
+template<class T>
+T gcd(T a, T b) { // O(logn)
     while (b != 0) {
-        int temp = a;
+        T temp = a;
         a = b;
         b = temp % b;
     }
     return a;
+}
+
+template<class T>
+T gcd_rec(T a, T b) { // O(logn)
+    return b == 0 ? a : gcd(b, a % b);
 }
 
 template<class T>
@@ -288,7 +303,7 @@ int main() {
     cout << gcd(140, 12) << endl; // 4
     cout << gcd(12, 20) << endl; // 4
     cout << gcd(18, 68) << endl; // 2
-    cout << gcd_iter(140, 12) << endl; // 4
-    cout << gcd_iter(12, 20) << endl; // 4
-    cout << gcd_iter(18, 68) << endl; // 2
+    cout << gcd_rec(140, 12) << endl; // 4
+    cout << gcd_rec(12, 20) << endl; // 4
+    cout << gcd_rec(18, 68) << endl; // 2
 }
