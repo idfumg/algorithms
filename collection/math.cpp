@@ -17,18 +17,23 @@ int is_prime(int n) { // O(sqrt(n))
 }
 
 vector<int> sieve_primes(int a, int b) { // O(logn)
-    vector<bool> is_prime(b + 1, true);
+    vector<bool> is_prime(b + 3);
     is_prime[0] = is_prime[1] = false;
-    for (int p = 2; p * p <= b; ++p) {
+    is_prime[2] = true;
+    for (int p = 3; p <= b; p += 2) {
+        is_prime[p] = true;
+    }
+    for (int p = 3; p * p <= b; p += 2) {
         if (is_prime[p]) {
-            for (int i = p * p; i <= b; i += p) { // mark all multiples
+            for (int i = p * p; i <= b; i += 2 * p) { // mark multiples
                 is_prime[i] = false;
             }
         }
     }
     vector<int> primes;
-    for (int i = a; i <= b; ++i) {
-        if (is_prime[i]) {
+    if (b >= 2) primes.push_back(2);
+    for (int i = 3; i <= b; i += 2) {
+        if (i >= a and is_prime[i]) {
             primes.push_back(i);
         }
     }
