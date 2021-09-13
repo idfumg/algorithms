@@ -1,22 +1,39 @@
+#define LOCAL_MACHINE
+
+#ifdef LOCAL_MACHINE
 #include "../../template.hpp"
-
+#else
 #include <bits/stdc++.h>
-
 using namespace std;
+#endif
 
-#define endl '\n'
-#define INF static_cast<int32_t>(1e9)
-
-using ll = int64_t;
-using vi = vector<int>;
-using vll = vector<ll>;
-using vvi = vector<vi>;
-using vvll = vector<vll>;
-using vb = vector<bool>;
-using vvb = vector<vb>;
-
-[[maybe_unused]] static const auto ___x = [](){ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0); cout.precision(15); cout.setf(ios::boolalpha);};
-
-int main() {
+void sol(istream& is) {
 
 }
+
+#ifdef LOCAL_MACHINE
+
+int main() { //TimeMeasure _; __x();
+    static const string inputs[] = {
+        R"(
+
+)",
+        R"(
+
+)"
+    };
+
+    for (const auto& input : inputs) {
+        istringstream is(input);
+        sol(is);
+        cout << endl;
+    }
+}
+
+#else
+
+int main() {
+    sol(std::cin);
+}
+
+#endif // LOCAL_MACHINE
