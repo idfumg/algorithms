@@ -191,7 +191,7 @@ vector<vector<T>> mul_matrix(const vector<vector<T>>& A, const vector<vector<T>>
 template<class T>
 vector<vector<T>> power_matrix(vector<vector<T>> A, T p) {
     const T n = A.size();
-    vector<vector<T>> I(n, vector<T>(n));
+    vector<vector<T>> I(n, vector<T>(n)); // Identity matrix (like res = 1)
     for (T i = 0; i < n; ++i) {
         I[i][i] = 1;
     }
