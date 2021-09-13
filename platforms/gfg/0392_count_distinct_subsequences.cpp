@@ -67,7 +67,7 @@ int tab(string s) {
 int main() { TimeMeasure _; __x();
     const string s1 = "gfg"; // 7
     const string s2 = "ggg"; // 4
-    const string s3 = "ggg123eree1"; // 4
+    const string s3 = "ggg123eree1"; // 636
 
     cout << naive(s1) << endl;
     cout << naive(s2) << endl;
