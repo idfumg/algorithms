@@ -1,50 +1,54 @@
-#include "../../template.hpp"
+#include "../template.hpp"
+
+struct TrieNode {
+    static constexpr uint8_t SIZE = 32;
+    array<unique_ptr<TrieNode>, SIZE> kids;
+
+    bool is_terminal() const noexcept { return kids.back().get(); }
+    bool is_valid(const char ch) const noexcept { return kids[ch - 'a'].get(); }
+    TrieNode* next(const char ch) const noexcept { return kids[ch - 'a'].get(); }
+};
 
 struct Trie {
-    using Characters = array<int, 27>;
-    vector<Characters> kids = vector<Characters>(1, Characters{});
+    unique_ptr<TrieNode> root = make_unique<TrieNode>();
 
-    void insert(const string& s) {
-        int node = 0;
-        for (const char ch : s) {
-            const int idx = ch - 'a';
-            if (kids[node][idx] == 0) {
-                kids.push_back(Characters{});
-                kids[node][idx] = kids.size() - 1;
+    void insert(const string& word) noexcept {
+        TrieNode* node = root.get();
+        for (const char ch : word) {
+            if (not node->kids[ch - 'a']) {
+                node->kids[ch - 'a'] = make_unique<TrieNode>();
             }
-            node = kids[node][idx];
+            node = node->kids[ch - 'a'].get();
         }
-        kids[node][26] = 1;
+        node->kids.back() = make_unique<TrieNode>();
     }
 
-    bool search(const string& s) {
-        int node = 0;
-        for (const char ch : s) {
-            const int idx = ch - 'a';
-            if (kids[node][idx] == 0) return false;
-            node = kids[node][idx];
+    bool exists(const string& word) const noexcept {
+        TrieNode* node = root.get();
+        for (const char ch : word) {
+            if (not node->kids[ch - 'a']) return 0;
+            node = node->kids[ch - 'a'].get();
         }
-        return kids[node][26];
+        return node->is_terminal();
     }
 
-    bool starts_with(const string& s) {
-        int node = 0;
-        for (const char ch : s) {
-            const int idx = ch - 'a';
-            if (kids[node][idx] == 0) return false;
-            node = kids[node][idx];
+    bool starts(const string& word) const noexcept {
+        TrieNode* node = root.get();
+        for (const char ch : word) {
+            if (not node->kids[ch - 'a']) return 0;
+            node = node->kids[ch - 'a'].get();
         }
-        return true;
+        return 1;
     }
 };
 
 int main() { TimeMeasure _; //__x();
     Trie trie;
     trie.insert("apple");
-    cout << trie.search("apple") << endl; // 1
-    cout << trie.search("app") << endl; // 0
-    cout << trie.starts_with("app") << endl; // 1
-    cout << trie.starts_with("apr") << endl; // 0
+    cout << trie.exists("apple") << endl; // 1
+    cout << trie.exists("app") << endl; // 0
+    cout << trie.starts("app") << endl; // 1
+    cout << trie.starts("apr") << endl; // 0
     trie.insert("app");
-    cout << trie.search("app") << endl; // 1
+    cout << trie.exists("app") << endl; // 1
 }
