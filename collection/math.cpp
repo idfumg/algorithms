@@ -62,11 +62,8 @@ vector<T> segmented_sieve_primes(const T a, const T b) { // O(logn)
     vector<bool> is_segmented_prime(b - a + 1, true); // skip [0..a)
     for (T i = 2; i * i <= b; ++i) {
         for (T p = a; p <= b; ++p) {
-            if (is_prime[i]) {
-                if (i == p) continue;
-                if (p % i == 0) {
-                    is_segmented_prime[p - a] = false;
-                }
+            if (is_prime[i] and i != p and p % i == 0) {
+                is_segmented_prime[p - a] = false;
             }
         }
     }
