@@ -203,24 +203,24 @@ vector<vector<T>> power_matrix(vector<vector<T>> A, T p) {
 }
 
 template<class T>
-T add_mod(T a, T b, const T mod = 1e9 + 7) {
+T add_mod(const T a, const T b, const T mod = 1e9 + 7) {
     return (a % mod + b % mod) % mod;
 }
 
 template<class T>
-T sub_mod(T a, T b, const T mod = 1e9 + 7) {
+T sub_mod(const T a, const T b, const T mod = 1e9 + 7) {
     return (a % mod - b % mod + mod) % mod;
 }
 
 template<class T>
-T mul_mod(T a, T b, const T mod = 1e9 + 7) {
+T mul_mod(const T a, const T b, const T mod = 1e9 + 7) {
     return ((a % mod) * (b % mod)) % mod;
 }
 
 template<class T>
 T gcd(T a, T b) { // O(logn)
     while (b != 0) {
-        T temp = a;
+        const T temp = a;
         a = b;
         b = temp % b;
     }
