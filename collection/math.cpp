@@ -1,8 +1,14 @@
-#include "../../template.hpp"
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
 
 int is_prime(int n) { // O(sqrt(n))
-    if (n == 1) return 0;
-    for (int i = 2; i * i <= n; ++i) {
+    if (n <= 1) return 0;
+    if (n == 2) return 1;
+    if (n % 2 == 0) return 0; // check if it's an even number
+    for (int i = 3; i * i <= n; i += 2) { // check only odd numbers
         if (n % i == 0) {
             return 0;
         }
@@ -15,7 +21,7 @@ vector<int> sieve_primes(int a, int b) { // O(logn)
     is_prime[0] = is_prime[1] = false;
     for (int p = 2; p * p <= b; ++p) {
         if (is_prime[p]) {
-            for (int i = p * p; i <= b; i += p) {
+            for (int i = p + p; i <= b; i += p) { // mark all multiples
                 is_prime[i] = false;
             }
         }
@@ -45,22 +51,57 @@ unordered_map<int, int> prime_factorization(int n) { // O(sqrt(n))
     return primes;
 }
 
+vector<int> prime_factorization_unique(int n) { // O(sqrt(n))
+    vector<int> primes;
+    for (int i = 2; i * i <= n; ++i) {
+        if (n % i == 0) {
+            while (n % i == 0) {
+                n /= i;
+            }
+            primes.push_back(i);
+        }
+    }
+    if (n > 1) primes.push_back(n);
+    return primes;
+}
+
 unordered_map<int, int> prime_factorization_sieve(int n) { // O(logn)
     vector<int> is_prime(n + 1, -1);
     for (int p = 2; p * p <= n; ++p) {
         if (is_prime[p] == -1) {
             for (int i = p * p; i <= n; i += p) {
-                if (is_prime[i] == -1) {
-                    is_prime[i] = p;
+                if (is_prime[i] == -1) { // it's not a prime num
+                    is_prime[i] = p; // it can be divided on the prime num `p`
                 }
             }
         }
     }
     unordered_map<int, int> primes;
-    for (; is_prime[n] != -1; n /= is_prime[n]) {
+    for (; is_prime[n] != -1; n /= is_prime[n]) { // remove every prime num
         ++primes[is_prime[n]];
     }
     ++primes[n];
+    return primes;
+}
+
+vector<int> prime_factorization_sieve_unique(int n) { // O(logn)
+    vector<int> is_prime(n + 1, -1);
+    for (int p = 2; p * p <= n; ++p) {
+        if (is_prime[p] == -1) {
+            for (int i = p * p; i <= n; i += p) {
+                if (is_prime[i] == -1) { // it's not a prime num
+                    is_prime[i] = p; // it can be divided on the prime num `p`
+                }
+            }
+        }
+    }
+    vector<int> primes;
+    for (; is_prime[n] != -1; n /= is_prime[n]) {
+        if (primes.empty() or primes.back() != is_prime[n]) {
+            primes.push_back(is_prime[n]);
+        }
+    }
+    if (primes.back() != n) primes.push_back(n);
     return primes;
 }
 
@@ -125,7 +166,19 @@ int gcd(int a, int b) {
     return gcd(b, a % b);
 }
 
-int main() { TimeMeasure _;
+template<class T>
+std::ostream& operator << (std::ostream& os, const std::vector<T>& v) noexcept {
+    for (const auto& value : v) os << value << ' ';
+    return os;
+}
+
+template<class T, class U>
+std::ostream& operator << (std::ostream& os, const std::unordered_map<T, U>& tab) noexcept {
+    for (const auto& [key, value] : tab) os << key << ": " << value << '\n';
+    return os;
+}
+
+int main() {
     cout << "is_prime:" << endl;
     cout << is_prime(7) << endl; // 1
     cout << is_prime(11) << endl; // 1
@@ -137,14 +190,24 @@ int main() { TimeMeasure _;
     cout << sieve_primes(0, 11) << endl; // 2 3 5 7 11
     cout << endl;
 
-    cout << "prime_factorization:";
+    cout << "prime_factorization:" << endl;
     cout << prime_factorization(21) << endl; // 7: 1, 3: 1
     cout << prime_factorization(2358811) << endl; // 23: 2, 13: 1, 7: 3
     cout << endl;
 
-    cout << "prime_factorization_sieve:";
+    cout << "prime_factorization_unique:" << endl;
+    cout << prime_factorization_unique(21) << endl; // 7, 3
+    cout << prime_factorization_unique(2358811) << endl; // 23, 13, 7
+    cout << endl;
+
+    cout << "prime_factorization_sieve:" << endl;
     cout << prime_factorization_sieve(21) << endl; // 7: 1, 3: 1
     cout << prime_factorization_sieve(2358811) << endl; // 23: 2, 13: 1, 7: 3
+    cout << endl;
+
+    cout << "prime_factorization_sieve_unique:" << endl;
+    cout << prime_factorization_sieve_unique(21) << endl; // 7, 3
+    cout << prime_factorization_sieve_unique(2358811) << endl; // 23, 13, 7
     cout << endl;
 
     cout << "power:" << endl;

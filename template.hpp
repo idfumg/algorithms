@@ -129,24 +129,6 @@ public:
     }
 };
 
-int power(int base, int p) { // O(logn) // binary exponentiation
-    int res = 1;
-    while (p > 0) {
-        if (p & 1) res *= base, --p;
-        else base *= base, p /= 2;
-    }
-    return res;
-}
-
-int power_mod(int base, int p, const int mod) { // O(logn)
-    int res = 1;
-    while (p > 0) {
-        if (p & 1) res *= base, res %= mod, --p;
-        else base *= base, base %= mod, p /= 2;
-    }
-    return res;
-}
-
 template<class T>
 void ruffle_sort(T& arr) { // qsort O(n^2) has complexity if elements are sorted
     random_shuffle(arr.begin(), arr.end());
