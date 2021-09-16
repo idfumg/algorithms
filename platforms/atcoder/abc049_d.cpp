@@ -1,4 +1,4 @@
-//#define LOCAL_MACHINE
+#define LOCAL_MACHINE
 
 #ifdef LOCAL_MACHINE
 #include "../../template.hpp"
@@ -40,7 +40,10 @@ void sol(istream& is) {
     }
     map<pair<int, int>, int> connected;
     for (int i = 0; i < N; ++i) {
-        ++connected[{Find(parent1, rank1, i), Find(parent2, rank2, i)}];
+        int root1 = Find(parent1, rank1, i);
+        int root2 = Find(parent2, rank2, i);
+        if (root1 == -1 or root2 == -1) connected[{root1, root2}] = 1;
+        else ++connected[{root1, root2}];
     }
     for (int i = 0; i < N; ++i) {
         cout << connected[{Find(parent1, rank1, i), Find(parent2, rank2, i)}] << ' ';
