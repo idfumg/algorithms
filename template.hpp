@@ -206,8 +206,13 @@ std::vector<std::string> random_strings(const std::size_t m, const std::size_t n
     return strings;
 }
 
-#define debug(VarName) {std::cerr << "'" << #VarName << "': " << std::boolalpha << (VarName) << ' ';}
-#define debugn(VarName) {std::cerr << "'" << #VarName << "': " << std::boolalpha << (VarName) << std::endl;}
+template<class ... Args>
+void debugn_logger(const string& vars, Args&& ... values) {
+    cout << vars << ": ";
+    string delim = "";
+    (..., (cout << delim << values, delim = ", "));
+}
+#define debugn(...) debugn_logger(#__VA_ARGS__, __VA_ARGS__)
 #define trace(Text) std::cout << "Line: " << __LINE__ << " [" << Text << "]" << std::endl;
 
 const int fastio = ([](){std::ios_base::sync_with_stdio(0); std::cin.tie(0);return 0;})();
