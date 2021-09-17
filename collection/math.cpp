@@ -152,21 +152,43 @@ vector<T> prime_factorization_sieve_unique(T n) { // O(logn)
 }
 
 template<class T>
-T power(T base, T p) { // O(logn) // binary exponentiation
+T power(T base, T p) { // O(logp) // binary exponentiation
     T res = 1;
     while (p > 0) {
         if (p & 1) res *= base, --p;
-        else base *= base, p /= 2;
+        else base *= base, p >>= 1;
     }
     return res;
 }
 
 template<class T>
-T power_mod(T base, T p, const T mod) { // O(logn)
+T power_mod(T base, T p, const T mod = 1e9 + 7) { // O(logp)
     T res = 1;
     while (p > 0) {
         if (p & 1) res *= base, res %= mod, --p;
         else base *= base, base %= mod, p /= 2;
+    }
+    return res;
+}
+
+template<class T>
+T power_bits(T base, T p) { // O(logp) // binary exponentiation
+    T res = 1;
+    while (p > 0) {
+        if (p & 1) res *= base;
+        base *= base;
+        p >>= 1;
+    }
+    return res;
+}
+
+template<class T>
+T power_bits_mod(T base, T p, const T mod = 1e9 + 7) { // O(logp)
+    T res = 1;
+    while (p > 0) {
+        if (p & 1) res *= base, res %= mod;
+        base *= base, base %= mod;
+        p >>= 1;
     }
     return res;
 }
@@ -283,6 +305,22 @@ int main() {
 
     cout << "power:" << endl;
     cout << power(2, 13) << endl; // 8192
+    cout << power<uint64_t>(5, 20) << endl; // 95367431640625
+    cout << endl;
+
+    cout << "power_mod:" << endl;
+    cout << power_mod(2, 13) << endl; // 8192
+    cout << power_mod<uint64_t>(5, 20) << endl; // 430973056
+    cout << endl;
+
+    cout << "power_bits:" << endl;
+    cout << power_bits(2, 13) << endl; // 8192
+    cout << power_bits<uint64_t>(5, 20) << endl; // 95367431640625
+    cout << endl;
+
+    cout << "power_bits_mod:" << endl;
+    cout << power_bits_mod(2, 13) << endl; // 8192
+    cout << power_bits_mod<uint64_t>(5, 20) << endl; // 95367431640625
     cout << endl;
 
     cout << "matrix exponentiation:";
