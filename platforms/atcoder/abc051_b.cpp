@@ -1,17 +1,23 @@
-#define LOCAL_MACHINE
+//#define LOCAL_MACHINE
 
 #ifdef LOCAL_MACHINE
 #include "../../template.hpp"
 #else
 #include <bits/stdc++.h>
 using namespace std;
-constexpr int INF = 1000000000 + 7;
-using i32 = std::int32_t;
-using i64 = std::int64_t;
 #endif
 
 void sol(istream& is) {
-
+    int n, s; is >> n >> s;
+    int ans = 0;
+    for (int i = 0; i <= n; ++i) {
+        for (int j = 0; j <= n; ++j) {
+            if (s - i - j >= 0 and s - i - j <= n) {
+                ++ans;
+            }
+        }
+    }
+    cout << ans;
 }
 
 #ifdef LOCAL_MACHINE
@@ -19,10 +25,10 @@ void sol(istream& is) {
 int main() { //TimeMeasure _; __x();
     static const string inputs[] = {
         R"(
-
+2 2
 )",
         R"(
-
+5 15
 )"
     };
 
@@ -36,7 +42,6 @@ int main() { //TimeMeasure _; __x();
 #else
 
 int main() {
-    const int fastio = ([](){std::ios_base::sync_with_stdio(0); std::cin.tie(0);return 0;})();
     sol(std::cin);
 }
 
