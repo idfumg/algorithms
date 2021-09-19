@@ -24,8 +24,10 @@ using vvc = std::vector<vc>;
 using vs = std::vector<string>;
 using vvs = std::vector<vs>;
 
-using ll = std::int64_t;
-using ull = std::uint64_t;
+using i32 = std::int32_t;
+using ui32 = std::uint32_t;
+using i64 = std::int64_t;
+using ui64 = std::uint64_t;
 
 template<class T>
 std::ostream& operator << (std::ostream& os, const std::pair<T, T>& p) noexcept {
@@ -78,6 +80,12 @@ std::ostream& operator << (std::ostream& os, const std::unordered_set<T>& s) noe
 template<class T, class U>
 std::ostream& operator << (std::ostream& os, const std::map<T, U>& tab) noexcept {
     for (const auto& [key, value] : tab) os << key << ": " << value << '\n';
+    return os;
+}
+
+template<class T>
+std::ostream& operator << (std::ostream& os, const std::unordered_multiset<T>& s) noexcept {
+    for (const auto& value : s) os << value << ' ';
     return os;
 }
 
@@ -211,6 +219,7 @@ void debugn_logger(const string& vars, Args&& ... values) {
     cout << vars << ": ";
     string delim = "";
     (..., (cout << delim << values, delim = ", "));
+    cout << endl;
 }
 #define debugn(...) debugn_logger(#__VA_ARGS__, __VA_ARGS__)
 #define trace(Text) std::cout << "Line: " << __LINE__ << " [" << Text << "]" << std::endl;
