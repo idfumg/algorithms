@@ -65,6 +65,12 @@ std::ostream& operator << (std::ostream& os, const std::multiset<T>& s) noexcept
     return os;
 }
 
+template<class T, class U>
+std::ostream& operator << (std::ostream& os, const std::multimap<T, U>& s) noexcept {
+    for (const auto& [key, value] : s) os << key << ": " << value << ' ';
+    return os;
+}
+
 template<class T>
 std::ostream& operator << (std::ostream& os, const std::set<T>& s) noexcept {
     for (const auto& value : s) os << value << ' ';
