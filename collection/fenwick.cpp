@@ -2,65 +2,148 @@
 
 using namespace std;
 
-void fenwick_init(vector<int>& tree, const vector<int>& arr) noexcept {
-    const int n = arr.size();
-    tree.clear();
-    tree.resize(n + 1);
-    for (int i = 1; i <= n; ++i) {
-        tree[i] += arr[i - 1];
-        if (const int parent = i + (i & -i); parent <= n) {
-            tree[parent] += tree[i];
+using i32 = std::int32_t;
+
+class RangeSlow {
+    vector<i32> arr;
+
+public:
+    template<class ... Args>
+    explicit RangeSlow(Args&& ... args) : arr{forward<Args>(args)...} {}
+
+    void update_at(i32 i, i32 value) {
+        arr[i] += value;
+    }
+
+    void update_range(i32 i, i32 j, i32 value) {
+        for (; i <= j; ++i) {
+            arr[i] += value;
         }
     }
-}
 
-int fenwick_sum(const vector<int>& tree, int i) noexcept {
-    int res = 0;
-    for (; i > 0; i -= i & -i) {
-        res += tree[i];
+    i32 sum(i32 j) {
+        i32 ans = 0;
+        for (i32 i = 0; i <= j; ++i) {
+            ans += arr[i];
+        }
+        return ans;
     }
-    return res;
-}
 
-int fenwick_sum(const vector<int>& tree, const int i, const int j) noexcept {
-    return fenwick_sum(tree, j) - fenwick_sum(tree, i - 1);
-}
-
-void fenwick_update(vector<int>& tree, int i, const int delta) noexcept {
-    const int n = tree.size();
-    for (; i < n; i += (i & -i)) {
-        tree[i] += delta;
+    i32 sum(i32 i, i32 j) {
+        i32 ans = 0;
+        for (; i <= j; ++i) {
+            ans += arr[i];
+        }
+        return ans;
     }
-}
+};
 
-void fenwick_update(vector<int>& tree, const int i, const int j, const int delta) noexcept {
-    for (int idx = i; idx <= j; ++idx) {
-        fenwick_update(tree, idx, delta);
+class FenwickTree {
+    vector<i32> tree;
+
+public:
+    explicit FenwickTree(const vector<i32>& arr) {
+        i32 n = arr.size();
+        tree.resize(n + 2);
+        for (i32 i = 1; i <= n; ++i) {
+            tree[i] += arr[i - 1];
+            if (i + (i & -i) <= n) tree[i + (i & -i)] += tree[i];
+        }
     }
-}
 
-void fenwick_set(vector<int>& tree, const int i, const int value) noexcept {
-    const int delta = value - fenwick_sum(tree, i, i);
-    fenwick_update(tree, i, delta);
-}
-
-void fenwick_sums(const vector<int>& tree, const vector<pair<int, int>>& ranges) noexcept {
-    for (const auto& [i, j] : ranges) {
-        cout << fenwick_sum(tree, i, j) << ' ';
+    explicit FenwickTree(i32 n) {
+        tree.resize(n + 2);
     }
-    cout << endl;
+
+public:
+    i32 query_prefix(i32 i) {
+        i32 ans = 0;
+        for (++i; i > 0; i -= (i & -i)) {
+            ans += tree[i];
+        }
+        return ans;
+    }
+
+    i32 query(i32 i, i32 j) {
+        return query_prefix(j) - query_prefix(i - 1);
+    }
+
+    void update_at(i32 i, i32 value) {
+        for (++i; i < static_cast<i32>(tree.size()); i += i & -i) {
+            tree[i] += value;
+        }
+    }
+
+    void update_range(i32 i, i32 j, i32 value) {
+        for (; i <= j; ++i) {
+            update_at(i, value);
+        }
+    }
+
+    void set(i32 i, i32 value) {
+        ++i; update_at(i, value - query(i, i));
+    }
+};
+
+template<class T>
+T random_number(const T from, const T to) {
+    std::random_device random_device;
+    std::mt19937_64 generator(random_device());
+    std::uniform_int_distribution<T> distribution{from, to};
+    return distribution(generator);
+}
+
+template<class T>
+std::vector<T> random_numbers(const std::size_t n, const T from, const T to) {
+    std::random_device random_device;
+    std::mt19937_64 generator(random_device());
+    std::uniform_int_distribution<T> distribution{from, to};
+    std::vector<T> numbers(n);
+    for (std::size_t i = 0; i < n; ++i) {
+        numbers[i] = distribution(generator);
+    }
+    return numbers;
 }
 
 int main() {
-    static const vector<int> arr = {1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12};
-    vector<int> tree;
-    fenwick_init(tree, arr);
-    fenwick_sums(tree, {{1, 2}, {1, 3}, {2, 4}, {4, 8}, {6, 6}}); // 3 6 9 32 6
-    fenwick_update(tree, 1, 3);
-    fenwick_sums(tree, {{1, 2}, {1, 3}, {2, 4}, {4, 8}, {6, 6}}); // 6 9 9 32 6
-    fenwick_update(tree, 1, 4, -1);
-    fenwick_sums(tree, {{1, 2}, {1, 3}, {2, 4}, {4, 8}, {6, 6}}); // 4 6 6 31 6
-    fenwick_set(tree, 6, 100);
-    fenwick_sums(tree, {{1, 2}, {1, 3}, {2, 4}, {4, 8}, {6, 6}}); // 4 6 6 125 100
+    const i32 TESTS = 100;
+    const i32 QUERIES = 1000;
+    const i32 SIZE = 3;
+    const i32 FROM = 2;
+    const i32 TO = 9;
+    for (i32 i = 0; i < TESTS; ++i) {
+        auto nums = random_numbers(SIZE, FROM, TO);
+
+        RangeSlow rangeSlow(nums);
+        FenwickTree fenwickTree(nums);
+
+        for (i32 j = 0; j < QUERIES; ++j) {
+            i32 rangeFrom = random_number(0, SIZE - 1);
+            i32 rangeTo = random_number(rangeFrom, SIZE - 1);
+            i32 value = random_number(FROM, TO);
+
+            for (i32 k = rangeFrom; k <= rangeTo; ++k) nums[k] += value;
+            rangeSlow.update_range(rangeFrom, rangeTo, value);
+            fenwickTree.update_range(rangeFrom, rangeTo, value);
+
+            // i32 idx = random_number(0, SIZE - 1);
+
+            // nums[idx] += value;
+            // rangeSlow.update_at(idx, value);
+            // fenwickTree.update_at(idx, value);
+
+            const i32 range_sum = rangeSlow.sum(rangeFrom, rangeTo);
+            const i32 fenwick_tree_sum = fenwickTree.query(rangeFrom, rangeTo);
+            if (range_sum != fenwick_tree_sum) {
+                cout << "Wrong sum" << endl;
+                for_each(nums.begin(), nums.end(), [](i32 n){cout << n << ' ';}); cout << endl;
+                cout << rangeFrom << endl;
+                cout << rangeTo << endl;
+                cout << range_sum << endl;
+                cout << fenwick_tree_sum << endl;
+                return 0;
+            }
+        }
+    }
     return 0;
 }
